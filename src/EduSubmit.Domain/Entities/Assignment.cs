@@ -97,7 +97,7 @@ public sealed class Assignment : AggregateRoot<Guid>
         if (Status == EnumAssignmentStatus.Published)
             return Result.Failure("Assignment is already published.");
 
-        if (IsPastDeadline())
+        if (IsPastDeadline(DateTime.UtcNow))
             return Result.Failure(
                 "A past-deadline assignment cannot be published.");
 
@@ -121,8 +121,38 @@ public sealed class Assignment : AggregateRoot<Guid>
         return Result.Success();
     }
 
-    public bool IsPastDeadline()
+    public bool IsPastDeadline(DateTime now) { return now > Deadline; }
+
+    public Result UpdateDetails(
+        string title,
+        string description,
+        DateTime deadline,
+        decimal maxMarks)
     {
-        return DateTime.UtcNow > Deadline;
+        if (string.IsNullOrWhiteSpace(title))
+            return Result.Failure("Assignment title is required.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            return Result.Failure("Assignment description is required.");
+
+        if (deadline <= DateTime.UtcNow)
+            return Result.Failure(
+                "Assignment deadline must be in the future.");
+
+        if (maxMarks <= 0)
+            return Result.Failure(
+                "Maximum marks must be greater than zero.");
+
+        Title = title.Trim();
+        Description = description.Trim();
+        Deadline = deadline;
+        MaxMarks = maxMarks;
+
+        return Result.Success();
+    }
+
+    public bool IsValidMarks(decimal marks)
+    {
+        return marks >= 0 && marks <= MaxMarks;
     }
 }
