@@ -94,6 +94,9 @@ public sealed class Submission : AggregateRoot<Guid>
         string? fileUrl,
         DateTime assignmentDeadline)
     {
+        content = content?.Trim();
+        fileUrl = fileUrl?.Trim();
+
         if (DateTime.UtcNow > assignmentDeadline)
             return Result.Failure(
                 "Submission cannot be updated after the assignment deadline.");
@@ -102,6 +105,9 @@ public sealed class Submission : AggregateRoot<Guid>
             return Result.Failure(
                 "A graded submission cannot be updated.");
 
+        if (!string.IsNullOrWhiteSpace(fileUrl) && !IsValidUrl(fileUrl))
+            return Result.Failure("Invalid file URL format.");
+
         if (string.IsNullOrWhiteSpace(content) &&
             string.IsNullOrWhiteSpace(fileUrl))
         {
@@ -109,8 +115,9 @@ public sealed class Submission : AggregateRoot<Guid>
                 "Submission must contain content or a file URL.");
         }
 
-        Content = content?.Trim();
-        FileUrl = fileUrl?.Trim();
+        Content = content;
+        FileUrl = fileUrl;
+        SubmittedAt = DateTime.UtcNow;
 
         return Result.Success();
     }
@@ -150,5 +157,24 @@ public sealed class Submission : AggregateRoot<Guid>
                 GradedAt.Value));
 
         return Result.Success();
+    }
+
+    public Result ReturnForRevision(string feedback)
+    {
+        if (Status != EnumSubmissionStatus.Submitted && Status != EnumSubmissionStatus.Late)
+            return Result.Failure("Only submitted submissions can be returned for revision");
+
+        if (string.IsNullOrWhiteSpace(feedback))
+            return Result.Failure("Feedback cannot be empty");
+
+        Status = EnumSubmissionStatus.ReturnedForRevision;
+        Feedback = feedback.Trim();
+
+        return Result.Success();
+    }
+
+    private static bool IsValidUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out _);
     }
 }
