@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: edusubmit-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: edusubmit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: edusubmit_dev_password
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - edusubmit_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d edusubmit"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: edusubmit-pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@edusubmit.com
+      PGADMIN_DEFAULT_PASSWORD: edusubmit_pgadmin_password
+
+    ports:
+      - "5051:80"
+
+    volumes:
+      - edusubmit_pgadmin_data:/var/lib/pgadmin
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  edusubmit_postgres_data:
+  edusubmit_pgadmin_data:

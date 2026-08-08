@@ -15,6 +15,10 @@ public sealed class User : AggregateRoot<Guid>
 
     public DateTime CreatedAt { get; private set; }
 
+    private User()
+        : base(Guid.Empty)
+    {
+    }
     private User(
         Guid id,
         string fullName,
