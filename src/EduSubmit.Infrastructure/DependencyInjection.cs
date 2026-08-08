@@ -1,4 +1,5 @@
 using EduSubmit.Application.Common.Interfaces;
+using EduSubmit.Infrastructure.Authentication;
 using EduSubmit.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +24,15 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IApplicationDbContext>(
-            provider => provider.GetRequiredService<EduSubmitDbContext>());
+            provider =>
+                provider.GetRequiredService<EduSubmitDbContext>());
+
+        services.Configure<JwtSettings>(
+            configuration.GetSection(JwtSettings.SectionName));
+
+        services.AddScoped<IJwtService, JwtService>();
+
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
         return services;
     }
