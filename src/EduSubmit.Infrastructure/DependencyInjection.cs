@@ -1,6 +1,8 @@
 using EduSubmit.Application.Common.Interfaces;
+using EduSubmit.Application.Users.Reader;
 using EduSubmit.Infrastructure.Authentication;
 using EduSubmit.Infrastructure.Persistence;
+using EduSubmit.Infrastructure.Persistence.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtService, JwtService>();
 
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
-
+        services.AddScoped<IUserReader, UserReader>();
         return services;
     }
 }

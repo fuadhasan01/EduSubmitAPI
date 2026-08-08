@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using EduSubmit.Infrastructure.Persistence;
+using EduSubmit.Infrastructure.Persistence.Seed;
+using EduSubmit.Application.Common.Behaviors;
+using System.Reflection.Metadata;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +20,21 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(
     builder.Configuration);
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(
+        typeof(LoggingBehavior<,>).Assembly);
+
+    cfg.AddOpenBehavior(
+        typeof(LoggingBehavior<,>));
+
+    cfg.AddOpenBehavior(
+        typeof(ValidationBehavior<,>));
+});
+
+builder.Services.AddValidatorsFromAssembly(
+    typeof(LoggingBehavior<,>).Assembly);
 
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
     ?? throw new InvalidOperationException("Jwt configuration section is missing.");
@@ -68,6 +88,14 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider
+        .GetRequiredService<EduSubmitDbContext>();
+
+    await DbSeeder.SeedAsync(context);
+}
 
 if (app.Environment.IsDevelopment())
 {
