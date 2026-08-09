@@ -1,3 +1,4 @@
+using EduSubmit.Api.Models.Submissions;
 using EduSubmit.Application.Submissions.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -55,6 +56,59 @@ public sealed class SubmissionsController : ControllerBase
                 message = "Submission ID in route and request body must match."
             });
         }
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsSuccess)
+            return NoContent();
+
+        return BadRequest(new
+        {
+            message = result.Error
+        });
+    }
+
+    [Authorize(Roles = "Teacher")]
+    [HttpPut("{id:guid}/grade")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> Grade(
+    Guid id,
+    [FromBody] GradeSubmissionRequest request,
+    CancellationToken cancellationToken)
+    {
+        var command = new GradeSubmissionCommand(
+            id,
+            request.Marks,
+            request.Feedback);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsSuccess)
+            return NoContent();
+
+        return BadRequest(new
+        {
+            message = result.Error
+        });
+    }
+
+    [Authorize(Roles = "Teacher")]
+    [HttpPut("{id:guid}/return-for-revision")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> ReturnForRevision(
+    Guid id,
+    [FromBody] ReturnSubmissionForRevisionRequest request,
+    CancellationToken cancellationToken)
+    {
+        var command = new ReturnSubmissionForRevisionCommand(
+            id,
+            request.Feedback);
 
         var result = await _sender.Send(command, cancellationToken);
 
