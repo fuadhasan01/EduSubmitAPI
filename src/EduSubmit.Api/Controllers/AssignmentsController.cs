@@ -1,5 +1,8 @@
 using EduSubmit.Application.Assignments.Commands;
+using EduSubmit.Application.Assignments.Dtos;
 using EduSubmit.Application.Assignments.DTOs;
+using EduSubmit.Application.Assignments.Queries;
+using EduSubmit.Application.Common.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -125,6 +128,27 @@ public sealed class AssignmentsController : ControllerBase
             return MapFailure(result.Error!);
 
         return NoContent();
+    }
+
+    [Authorize(Roles = "Teacher")]
+    [HttpGet("teacher")]
+    [ProducesResponseType(typeof(PaginatedList<AssignmentListDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetForTeacher(
+    [FromQuery] GetAssignmentsForTeacherQuery query,
+    CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsSuccess)
+            return Ok(result.Value);
+
+        return BadRequest(new
+        {
+            message = result.Error
+        });
     }
 
     private IActionResult MapFailure(string error)
