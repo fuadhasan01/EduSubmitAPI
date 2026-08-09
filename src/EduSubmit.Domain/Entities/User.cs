@@ -15,6 +15,8 @@ public sealed class User : AggregateRoot<Guid>
 
     public DateTime CreatedAt { get; private set; }
 
+    public bool IsActive { get; private set; }
+
     private User()
         : base(Guid.Empty)
     {
@@ -25,7 +27,8 @@ public sealed class User : AggregateRoot<Guid>
         Email email,
         string passwordHash,
         EnumUserRole role,
-        DateTime createdAt)
+        DateTime createdAt,
+        bool isActive = true)
         : base(id)
     {
         FullName = fullName;
@@ -33,6 +36,7 @@ public sealed class User : AggregateRoot<Guid>
         PasswordHash = passwordHash;
         Role = role;
         CreatedAt = createdAt;
+        IsActive = isActive;
     }
 
     public static Result<User> Create(
@@ -59,8 +63,18 @@ public sealed class User : AggregateRoot<Guid>
             email,
             passwordHash,
             role,
-            DateTime.UtcNow);
+            DateTime.UtcNow,
+            true);
 
         return Result<User>.Success(user);
+    }
+
+    public Result Deactivate()
+    {
+        if (!IsActive) return Result.Failure("User is already deactivated.");
+
+        IsActive = false;
+
+        return Result.Success();
     }
 }

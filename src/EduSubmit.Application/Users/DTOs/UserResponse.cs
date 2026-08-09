@@ -7,4 +7,5 @@ public sealed record UserResponse(
     string FullName,
     string Email,
     EnumUserRole Role,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    bool IsActive);

@@ -48,6 +48,7 @@ public sealed class GetUsersQueryHandler
             user.FullName,
             user.Email.Value,
             user.Role,
-            user.CreatedAt);
+            user.CreatedAt,
+            user.IsActive);
     }
 }

@@ -69,7 +69,8 @@ public sealed class CreateUserCommandHandler
             user.FullName,
             user.Email.Value,
             user.Role,
-            user.CreatedAt);
+            user.CreatedAt,
+            user.IsActive);
 
         return Result<UserResponse>.Success(response);
     }

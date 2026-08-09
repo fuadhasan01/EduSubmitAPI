@@ -65,4 +65,30 @@ public sealed class UsersController : ControllerBase
             message = result.Error
         });
     }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Deactivate(Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeactivateUserCommand(id);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsSuccess) return NoContent();
+
+        if (result.Error == "User not found.")
+            return NotFound(new
+            {
+                message = result.Error
+            });
+
+        return BadRequest(new
+        {
+            message = result.Error
+        });
+    }
 }
