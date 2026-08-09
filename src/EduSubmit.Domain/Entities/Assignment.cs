@@ -123,34 +123,42 @@ public sealed class Assignment : AggregateRoot<Guid>
 
     public bool IsPastDeadline(DateTime now) { return now > Deadline; }
 
-    public Result UpdateDetails(
-        string title,
-        string description,
-        DateTime deadline,
-        decimal maxMarks)
+    public Result Update(
+    string title,
+    string? description,
+    Guid subjectId,
+    Guid classId,
+    DateTime deadline,
+    int maxMarks,
+    DateTime now)
     {
         if (string.IsNullOrWhiteSpace(title))
-            return Result.Failure("Assignment title is required.");
+            return Result.Failure("Title is required.");
 
-        if (string.IsNullOrWhiteSpace(description))
-            return Result.Failure("Assignment description is required.");
+        if (subjectId == Guid.Empty)
+            return Result.Failure("Subject is required.");
 
-        if (deadline <= DateTime.UtcNow)
-            return Result.Failure(
-                "Assignment deadline must be in the future.");
+        if (classId == Guid.Empty)
+            return Result.Failure("Class is required.");
+
+        if (deadline <= now)
+            return Result.Failure("Deadline must be in the future.");
 
         if (maxMarks <= 0)
-            return Result.Failure(
-                "Maximum marks must be greater than zero.");
+            return Result.Failure("Maximum marks must be greater than zero.");
+
+        if (deadline <= now)
+            return Result.Failure("Assignment deadline has passed.");
 
         Title = title.Trim();
-        Description = description.Trim();
+        Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim();
+        SubjectId = subjectId;
+        ClassId = classId;
         Deadline = deadline;
         MaxMarks = maxMarks;
 
         return Result.Success();
     }
-
     public bool IsValidMarks(decimal marks)
     {
         return marks >= 0 && marks <= MaxMarks;

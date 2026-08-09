@@ -38,6 +38,10 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IUserReader, UserReader>();
         services.AddScoped<IUserWriter, UserWriter>();
+
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
+
         return services;
     }
 }
