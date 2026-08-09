@@ -1,3 +1,4 @@
+using EduSubmit.Application.Common.Models;
 using EduSubmit.Application.Users.Reader;
 using EduSubmit.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -27,5 +28,19 @@ public sealed class UserReader : IUserReader
             .AnyAsync(
                 user => user.Email.Value == email,
                 cancellationToken);
+    }
+
+    public async Task<PaginatedList<User>> GetUsersAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Users.AsNoTracking().OrderBy(user => user.CreatedAt);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var users = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PaginatedList<User>(users, totalCount, pageNumber, pageSize);
     }
 }
