@@ -1,5 +1,6 @@
 using EduSubmit.Application.Common.Interfaces;
 using EduSubmit.Application.Users.Reader;
+using EduSubmit.Application.Users.Writer;
 using EduSubmit.Infrastructure.Authentication;
 using EduSubmit.Infrastructure.Persistence;
 using EduSubmit.Infrastructure.Persistence.Users;
@@ -36,6 +37,7 @@ public static class DependencyInjection
 
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IUserReader, UserReader>();
+        services.AddScoped<IUserWriter, UserWriter>();
         return services;
     }
 }

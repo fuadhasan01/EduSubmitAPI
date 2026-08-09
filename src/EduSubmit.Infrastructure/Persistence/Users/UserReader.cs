@@ -13,12 +13,18 @@ public sealed class UserReader : IUserReader
         _context = context;
     }
 
-    public async Task<User?> GetByEmailAsync(
-        string email,
-        CancellationToken cancellationToken = default)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _context.Users
             .FirstOrDefaultAsync(
+                user => user.Email.Value == email,
+                cancellationToken);
+    }
+
+    public async Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        return await _context.Users
+            .AnyAsync(
                 user => user.Email.Value == email,
                 cancellationToken);
     }
