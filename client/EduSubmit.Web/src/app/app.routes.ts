@@ -6,9 +6,7 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./features/auth/login/login-placeholder.component').then(
-        (m) => m.LoginPlaceholderComponent,
-      ),
+      import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'admin',

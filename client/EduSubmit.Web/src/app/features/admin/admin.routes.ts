@@ -10,4 +10,9 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./admin-placeholder.component').then((m) => m.AdminPlaceholderComponent),
   },
+  {
+    path: 'users',
+    canActivate: [authGuard, roleGuard('Admin')],
+    loadChildren: () => import('./users/users.routes').then((m) => m.USERS_ROUTES),
+  },
 ];

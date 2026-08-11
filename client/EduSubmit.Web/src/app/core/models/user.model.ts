@@ -1,7 +1,7 @@
 export enum UserRole {
   Admin = 1,
   Teacher = 2,
-  Student = 3
+  Student = 3,
 }
 
 export interface User {
@@ -10,6 +10,7 @@ export interface User {
   email: string;
   role: UserRole;
   createdAt?: string;
+  isActive: boolean;
 }
 
 export interface CreateUserRequest {
