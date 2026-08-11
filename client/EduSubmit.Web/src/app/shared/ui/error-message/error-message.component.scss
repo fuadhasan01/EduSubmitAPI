@@ -1,0 +1,18 @@
+.error-message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.error-message strong {
+    font-size: 0.875rem;
+}
+
+.error-message span {
+    font-size: 0.8125rem;
+}

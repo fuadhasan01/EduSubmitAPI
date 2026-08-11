@@ -1,0 +1,42 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgb(0 0 0 / 45%);
+}
+
+.modal {
+    width: min(100%, 32rem);
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 1rem 3rem rgb(0 0 0 / 20%);
+}
+
+.modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal__header h2 {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.close {
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modal__body {
+    padding: 1.25rem;
+}
