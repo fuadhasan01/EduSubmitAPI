@@ -1,0 +1,41 @@
+<div class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Admin · Classes</span>
+      <h1 class="page__title">Classes</h1>
+    </div>
+
+    <app-button label="New class" variant="primary" (clicked)="openCreateForm()" />
+  </header>
+
+  <app-loading [visible]="loading()" message="Loading classes..." />
+
+  @if (!loading()) {
+    @if (classes().length > 0) {
+      <div class="classes-grid">
+        @for (schoolClass of classes(); track schoolClass.id) {
+          <article class="class-card card">
+            <span class="class-card__label">Class</span>
+            <h2 class="class-card__name">{{ schoolClass.name }}</h2>
+          </article>
+        }
+      </div>
+    } @else {
+      <app-empty-state
+        icon="🏫"
+        title="No classes yet"
+        message="Create your first class to start organizing subjects and students."
+        actionLabel="New class"
+        (action)="openCreateForm()"
+      />
+    }
+  }
+</div>
+
+<app-class-form-modal
+  [open]="formOpen()"
+  [submitting]="formSubmitting()"
+  [serverError]="formError()"
+  (submitted)="createClass($event)"
+  (cancelled)="closeCreateForm()"
+/>
