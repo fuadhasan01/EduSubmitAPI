@@ -1,0 +1,40 @@
+<section class="submissions-page">
+  <header class="page-header">
+    <div>
+      <h1>Submissions</h1>
+      <p>View student submissions and their current results.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <app-loading />
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="retry()">Retry</button>
+    </div>
+  } @else if (submissions().length === 0) {
+    <app-empty-state
+      title="No submissions found"
+      message="There are no submissions available."
+    />
+  } @else {
+    <div class="submission-summary">
+      <span>Total submissions: {{ totalCount() }}</span>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [rows]="submissions()"
+      (rowClicked)="openSubmission($event)"
+    />
+
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [hasPreviousPage]="hasPreviousPage()"
+      [hasNextPage]="hasNextPage()"
+      (pageChanged)="onPageChanged($event)"
+    />
+  }
+</section>

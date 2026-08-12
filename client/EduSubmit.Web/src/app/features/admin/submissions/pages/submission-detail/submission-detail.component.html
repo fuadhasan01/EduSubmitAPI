@@ -1,0 +1,108 @@
+<section class="submission-detail-page">
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="goBack()">
+      ← Back to Submissions
+    </button>
+  </header>
+
+  @if (loading()) {
+    <app-loading />
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="retry()">Retry</button>
+    </div>
+  } @else if (submission(); as item) {
+    <article class="submission-card">
+      <header class="submission-header">
+        <div>
+          <h1>Submission Details</h1>
+
+          <app-badge
+            [text]="item.status"
+            [variant]="getStatusVariant(item.status)"
+          />
+        </div>
+      </header>
+
+      <section class="information-section">
+        <h2>Student Information</h2>
+
+        <dl class="information-grid">
+          <div>
+            <dt>Student ID</dt>
+            <dd>{{ item.studentId }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="information-section">
+        <h2>Assignment Information</h2>
+
+        <dl class="information-grid">
+          <div>
+            <dt>Assignment ID</dt>
+            <dd>{{ item.assignmentId }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="information-section">
+        <h2>Submission</h2>
+
+        <dl class="information-grid">
+          <div>
+            <dt>Submitted At</dt>
+            <dd>{{ item.submittedAt | date: 'medium' }}</dd>
+          </div>
+
+          <div>
+            <dt>Status</dt>
+            <dd>{{ item.status }}</dd>
+          </div>
+
+          <div>
+            <dt>Marks</dt>
+            <dd>{{ item.marks ?? 'Not graded' }}</dd>
+          </div>
+
+          <div>
+            <dt>Graded At</dt>
+            <dd>
+              {{ item.gradedAt ? (item.gradedAt | date: 'medium') : 'Not graded' }}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="content-section">
+        <h2>Content</h2>
+        <div class="content">
+          {{ item.content }}
+        </div>
+      </section>
+
+      @if (item.fileUrl) {
+        <section class="content-section">
+          <h2>Attached File</h2>
+
+          <a [href]="item.fileUrl" target="_blank" rel="noopener noreferrer">
+            View submitted file
+          </a>
+        </section>
+      }
+
+      <section class="content-section">
+        <h2>Feedback</h2>
+
+        @if (item.feedback) {
+          <div class="feedback">
+            {{ item.feedback }}
+          </div>
+        } @else {
+          <p class="no-feedback">No feedback provided.</p>
+        }
+      </section>
+    </article>
+  }
+</section>
