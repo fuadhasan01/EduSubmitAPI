@@ -1,0 +1,66 @@
+<section class="assignment-detail-page">
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="goBack()">
+      ← Back to Assignments
+    </button>
+  </header>
+
+  @if (loading()) {
+    <app-loading />
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="retry()">Retry</button>
+    </div>
+  } @else if (assignment(); as item) {
+    <article class="assignment-card">
+      <div class="assignment-header">
+        <div>
+          <h1>{{ item.title }}</h1>
+
+          <app-badge
+            [text]="item.status"
+            [variant]="getStatusVariant(item.status)"
+          />
+        </div>
+      </div>
+
+      <div class="assignment-description">
+        <h2>Description</h2>
+        <p>{{ item.description }}</p>
+      </div>
+
+      <dl class="assignment-information">
+        <div>
+          <dt>Subject ID</dt>
+          <dd>{{ item.subjectId }}</dd>
+        </div>
+
+        <div>
+          <dt>Class ID</dt>
+          <dd>{{ item.classId }}</dd>
+        </div>
+
+        <div>
+          <dt>Teacher ID</dt>
+          <dd>{{ item.teacherId }}</dd>
+        </div>
+
+        <div>
+          <dt>Deadline</dt>
+          <dd>{{ item.deadline | date: 'medium' }}</dd>
+        </div>
+
+        <div>
+          <dt>Maximum Marks</dt>
+          <dd>{{ item.maxMarks }}</dd>
+        </div>
+
+        <div>
+          <dt>Created At</dt>
+          <dd>{{ item.createdAt | date: 'medium' }}</dd>
+        </div>
+      </dl>
+    </article>
+  }
+</section>

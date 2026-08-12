@@ -1,0 +1,40 @@
+<section class="assignments-page">
+  <header class="page-header">
+    <div>
+      <h1>Assignments</h1>
+      <p>View all assignments in the system.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <app-loading />
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button type="button" (click)="retry()">Retry</button>
+    </div>
+  } @else if (assignments().length === 0) {
+    <app-empty-state
+      title="No assignments found"
+      message="There are no assignments available."
+    />
+  } @else {
+    <div class="assignment-summary">
+      <span>Total assignments: {{ totalCount() }}</span>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [rows]="assignments()"
+      (rowClicked)="openAssignment($event)"
+    />
+
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [hasPreviousPage]="hasPreviousPage()"
+      [hasNextPage]="hasNextPage()"
+      (pageChanged)="onPageChanged($event)"
+    />
+  }
+</section>

@@ -1,0 +1,187 @@
+<div class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Admin · Relationships</span>
+      <h1 class="page__title">Assignments &amp; enrollment</h1>
+    </div>
+  </header>
+
+  <app-loading [visible]="classesLoading() || usersLoading()" message="Loading reference data..." />
+
+  @if (!classesLoading() && !usersLoading()) {
+    @if (classes().length === 0) {
+      <app-empty-state
+        icon="🏫"
+        title="No classes yet"
+        message="Create a class and its subjects before assigning teachers or enrolling students."
+      />
+    } @else {
+      <div class="relationships-grid">
+        <!-- Assign teacher panel -->
+        <section class="card panel">
+          <div class="panel__header">
+            <span class="panel__eyebrow">Teachers</span>
+            <h2 class="panel__title">Assign teacher to subject</h2>
+          </div>
+
+          <div class="panel__body">
+            <span class="panel__label">Class</span>
+            <div class="chip-row">
+              @for (schoolClass of classes(); track schoolClass.id) {
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip--active]="assignClassId() === schoolClass.id"
+                  (click)="selectAssignClass(schoolClass)"
+                >
+                  {{ schoolClass.name }}
+                </button>
+              }
+            </div>
+
+            @if (assignClassId()) {
+              <app-loading [visible]="assignSubjectsLoading()" message="Loading subjects..." />
+
+              @if (!assignSubjectsLoading()) {
+                @if (assignSubjects().length === 0) {
+                  <app-empty-state
+                    icon="📘"
+                    title="No subjects in this class"
+                    message="Add a subject to this class first."
+                  />
+                } @else if (teachers().length === 0) {
+                  <app-empty-state
+                    icon="🧑‍🏫"
+                    title="No teachers available"
+                    message="Create a user with the Teacher role first."
+                  />
+                } @else {
+                  <form class="form" [formGroup]="assignForm" (ngSubmit)="submitAssignTeacher()">
+                    <label class="field">
+                      <span>Subject</span>
+                      <select
+                        class="field__control"
+                        formControlName="subjectId"
+                        [attr.aria-invalid]="
+                          assignForm.controls.subjectId.touched && assignForm.controls.subjectId.invalid
+                        "
+                      >
+                        <option value="" disabled>Select a subject</option>
+                        @for (subject of assignSubjects(); track subject.id) {
+                          <option [value]="subject.id">{{ subject.name }}</option>
+                        }
+                      </select>
+                      @if (assignForm.controls.subjectId.touched && assignForm.controls.subjectId.invalid) {
+                        <small class="field__error">Please select a subject.</small>
+                      }
+                    </label>
+
+                    <label class="field">
+                      <span>Teacher</span>
+                      <select
+                        class="field__control"
+                        formControlName="teacherId"
+                        [attr.aria-invalid]="
+                          assignForm.controls.teacherId.touched && assignForm.controls.teacherId.invalid
+                        "
+                      >
+                        <option value="" disabled>Select a teacher</option>
+                        @for (teacher of teachers(); track teacher.id) {
+                          <option [value]="teacher.id">{{ teacher.fullName }}</option>
+                        }
+                      </select>
+                      @if (assignForm.controls.teacherId.touched && assignForm.controls.teacherId.invalid) {
+                        <small class="field__error">Please select a teacher.</small>
+                      }
+                    </label>
+
+                    @if (assignError()) {
+                      <p class="field__error field__error--banner" role="alert">{{ assignError() }}</p>
+                    }
+
+                    <app-button
+                      type="submit"
+                      label="Assign teacher"
+                      loadingLabel="Assigning..."
+                      variant="primary"
+                      [fullWidth]="true"
+                      [loading]="assignSubmitting()"
+                    />
+                  </form>
+                }
+              }
+            }
+          </div>
+        </section>
+
+        <!-- Enroll student panel -->
+        <section class="card panel">
+          <div class="panel__header">
+            <span class="panel__eyebrow">Students</span>
+            <h2 class="panel__title">Enroll student in class</h2>
+          </div>
+
+          <div class="panel__body">
+            <span class="panel__label">Class</span>
+            <div class="chip-row">
+              @for (schoolClass of classes(); track schoolClass.id) {
+                <button
+                  type="button"
+                  class="chip"
+                  [class.chip--active]="enrollClassId() === schoolClass.id"
+                  (click)="selectEnrollClass(schoolClass)"
+                >
+                  {{ schoolClass.name }}
+                </button>
+              }
+            </div>
+
+            @if (enrollClassId()) {
+              @if (students().length === 0) {
+                <app-empty-state
+                  icon="🎓"
+                  title="No students available"
+                  message="Create a user with the Student role first."
+                />
+              } @else {
+                <form class="form" [formGroup]="enrollForm" (ngSubmit)="submitEnrollStudent()">
+                  <label class="field">
+                    <span>Student</span>
+                    <select
+                      class="field__control"
+                      formControlName="studentId"
+                      [attr.aria-invalid]="
+                        enrollForm.controls.studentId.touched && enrollForm.controls.studentId.invalid
+                      "
+                    >
+                      <option value="" disabled>Select a student</option>
+                      @for (student of students(); track student.id) {
+                        <option [value]="student.id">{{ student.fullName }}</option>
+                      }
+                    </select>
+                    @if (enrollForm.controls.studentId.touched && enrollForm.controls.studentId.invalid) {
+                      <small class="field__error">Please select a student.</small>
+                    }
+                  </label>
+
+                  @if (enrollError()) {
+                    <p class="field__error field__error--banner" role="alert">{{ enrollError() }}</p>
+                  }
+
+                  <app-button
+                    type="submit"
+                    label="Enroll student"
+                    loadingLabel="Enrolling..."
+                    variant="primary"
+                    [fullWidth]="true"
+                    [loading]="enrollSubmitting()"
+                  />
+                </form>
+              }
+            }
+          </div>
+        </section>
+      </div>
+    }
+  }
+</div>

@@ -11,7 +11,8 @@ namespace EduSubmit.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Teacher")]
+//teacher and admin can create, update, publish, unpublish and delete assignments
+[Authorize(Roles = "Teacher,Admin")]
 public sealed class AssignmentsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -130,7 +131,7 @@ public sealed class AssignmentsController : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Roles = "Teacher")]
+    [Authorize(Roles = "Teacher,Admin")]
     [HttpGet("teacher")]
     [ProducesResponseType(typeof(PaginatedList<AssignmentListDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -26,4 +26,16 @@ export const ADMIN_ROUTES: Routes = [
     canActivate: [authGuard, roleGuard('Admin')],
     loadChildren: () => import('./subjects/subjects.routes').then((m) => m.SUBJECTS_ROUTES),
   },
+  {
+    path: 'relationships',
+    canActivate: [authGuard, roleGuard('Admin')],
+    loadChildren: () =>
+      import('./relationships/relationships.routes').then((m) => m.RELATIONSHIPS_ROUTES),
+  },
+  {
+    path: 'assignments',
+    canActivate: [authGuard, roleGuard('Admin')],
+    loadChildren: () =>
+      import('./assignments/assignments.routes').then((m) => m.ASSIGNMENTS_ROUTES),
+  },
 ];
