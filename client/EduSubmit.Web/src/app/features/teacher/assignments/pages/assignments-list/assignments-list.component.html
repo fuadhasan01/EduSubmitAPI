@@ -1,0 +1,47 @@
+<section class="assignments-page">
+  <header class="page-header">
+    <div>
+      <h1>My Assignments</h1>
+      <p>Manage assignments created by you.</p>
+    </div>
+
+    <app-button type="button" (clicked)="createAssignment()">
+      Create Assignment
+    </app-button>
+  </header>
+
+  @if (loading()) {
+    <app-loading />
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+
+      <app-button type="button" (clicked)="retry()">
+        Retry
+      </app-button>
+    </div>
+  } @else if (assignments().length === 0) {
+    <app-empty-state
+      title="No assignments found"
+      message="You have not created any assignments yet."
+    />
+  } @else {
+    <div class="assignment-summary">
+      <span>Total assignments: {{ totalCount() }}</span>
+    </div>
+
+    <app-table
+      [columns]="columns"
+      [rows]="assignments()"
+      (rowClicked)="openAssignment($event)"
+    />
+
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      [hasPreviousPage]="hasPreviousPage()"
+      [hasNextPage]="hasNextPage()"
+      (pageChanged)="onPageChanged($event)"
+    />
+  }
+</section>

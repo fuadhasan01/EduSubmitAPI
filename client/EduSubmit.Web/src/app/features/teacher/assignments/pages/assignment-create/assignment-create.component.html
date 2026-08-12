@@ -1,0 +1,9 @@
+<section class="assignment-create-page">
+  <app-assignment-form
+    mode="create"
+    [submitting]="submitting()"
+    [serverError]="serverError()"
+    (createSubmitted)="createAssignment($event)"
+    (cancelled)="cancel()"
+  />
+</section>

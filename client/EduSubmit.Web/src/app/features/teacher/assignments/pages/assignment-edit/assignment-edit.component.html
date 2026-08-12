@@ -1,0 +1,18 @@
+<section class="assignment-edit-page">
+  @if (loading()) {
+    <app-loading />
+  } @else if (assignment(); as item) {
+    <app-assignment-form
+      mode="edit"
+      [assignment]="item"
+      [submitting]="submitting()"
+      [serverError]="serverError()"
+      (updateSubmitted)="updateAssignment($event)"
+      (cancelled)="cancel()"
+    />
+  } @else if (serverError()) {
+    <div class="error-state">
+      {{ serverError() }}
+    </div>
+  }
+</section>

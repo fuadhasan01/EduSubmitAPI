@@ -1,0 +1,110 @@
+<section class="assignment-detail-page">
+  <header class="page-header">
+    <button type="button" class="back-button" (click)="goBack()">
+      ← Back to Assignments
+    </button>
+  </header>
+
+  @if (loading()) {
+    <app-loading />
+  } @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+
+      <app-button type="button" (clicked)="retry()">
+        Retry
+      </app-button>
+    </div>
+  } @else if (assignment(); as item) {
+    <article class="assignment-card">
+      <header class="assignment-header">
+        <div>
+          <h1>{{ item.title }}</h1>
+
+          <app-badge
+            [text]="item.status"
+            [variant]="getStatusVariant(item.status)"
+          />
+        </div>
+
+        <div class="assignment-actions">
+          <app-button
+            type="button"
+            variant="secondary"
+            [disabled]="actionLoading()"
+            (clicked)="edit()"
+          >
+            Edit
+          </app-button>
+
+          @if (item.status === 'Draft') {
+            <app-button
+              type="button"
+              [disabled]="actionLoading()"
+              (clicked)="publish()"
+            >
+              Publish
+            </app-button>
+          }
+
+          @if (item.status === 'Published') {
+            <app-button
+              type="button"
+              variant="secondary"
+              [disabled]="actionLoading()"
+              (clicked)="unpublish()"
+            >
+              Unpublish
+            </app-button>
+          }
+
+          <app-button
+            type="button"
+            variant="danger"
+            [disabled]="actionLoading()"
+            (clicked)="deleteAssignment()"
+          >
+            Delete
+          </app-button>
+        </div>
+      </header>
+
+      <section class="assignment-description">
+        <h2>Description</h2>
+        <p>{{ item.description }}</p>
+      </section>
+
+      <dl class="assignment-information">
+        <div>
+          <dt>Subject ID</dt>
+          <dd>{{ item.subjectId }}</dd>
+        </div>
+
+        <div>
+          <dt>Class ID</dt>
+          <dd>{{ item.classId }}</dd>
+        </div>
+
+        <div>
+          <dt>Teacher ID</dt>
+          <dd>{{ item.teacherId }}</dd>
+        </div>
+
+        <div>
+          <dt>Deadline</dt>
+          <dd>{{ item.deadline | date: 'medium' }}</dd>
+        </div>
+
+        <div>
+          <dt>Maximum Marks</dt>
+          <dd>{{ item.maxMarks }}</dd>
+        </div>
+
+        <div>
+          <dt>Created At</dt>
+          <dd>{{ item.createdAt | date: 'medium' }}</dd>
+        </div>
+      </dl>
+    </article>
+  }
+</section>
