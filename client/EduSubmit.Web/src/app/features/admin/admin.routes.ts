@@ -21,4 +21,9 @@ export const ADMIN_ROUTES: Routes = [
     canActivate: [authGuard, roleGuard('Admin')],
     loadChildren: () => import('./classes/classes.routes').then((m) => m.CLASSES_ROUTES),
   },
+  {
+    path: 'subjects',
+    canActivate: [authGuard, roleGuard('Admin')],
+    loadChildren: () => import('./subjects/subjects.routes').then((m) => m.SUBJECTS_ROUTES),
+  },
 ];

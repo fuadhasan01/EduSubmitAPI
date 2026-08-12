@@ -1,0 +1,35 @@
+<app-modal [open]="open()" [title]="'New subject — ' + className()" (closed)="close()">
+  <form class="subject-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <label class="field">
+      <span>Subject name</span>
+      <input
+        type="text"
+        class="field__control"
+        formControlName="name"
+        placeholder="e.g. Mathematics"
+        [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
+      />
+      @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+        <small class="field__error">Subject name is required.</small>
+      }
+      @if (form.controls.name.touched && form.controls.name.hasError('minlength')) {
+        <small class="field__error">Subject name must be at least 2 characters.</small>
+      }
+    </label>
+
+    @if (serverError()) {
+      <p class="field__error field__error--banner" role="alert">{{ serverError() }}</p>
+    }
+
+    <div class="subject-form__actions">
+      <app-button type="button" label="Cancel" variant="secondary" (clicked)="close()" />
+      <app-button
+        type="submit"
+        label="Create subject"
+        loadingLabel="Creating..."
+        variant="primary"
+        [loading]="submitting()"
+      />
+    </div>
+  </form>
+</app-modal>

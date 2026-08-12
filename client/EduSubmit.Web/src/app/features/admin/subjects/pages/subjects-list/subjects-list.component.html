@@ -1,0 +1,76 @@
+<div class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Admin · Subjects</span>
+      <h1 class="page__title">Subjects</h1>
+    </div>
+
+    <app-button
+      label="New subject"
+      variant="primary"
+      [disabled]="!selectedClassId()"
+      (clicked)="openCreateForm()"
+    />
+  </header>
+
+  <app-loading [visible]="classesLoading()" message="Loading classes..." />
+
+  @if (!classesLoading()) {
+    @if (classes().length > 0) {
+      <div class="class-chips" role="tablist" aria-label="Select a class">
+        @for (schoolClass of classes(); track schoolClass.id) {
+          <button
+            type="button"
+            role="tab"
+            class="class-chip"
+            [class.class-chip--active]="selectedClassId() === schoolClass.id"
+            [attr.aria-selected]="selectedClassId() === schoolClass.id"
+            (click)="selectClass(schoolClass)"
+          >
+            {{ schoolClass.name }}
+          </button>
+        }
+      </div>
+
+      <app-loading [visible]="subjectsLoading()" message="Loading subjects..." />
+
+      @if (!subjectsLoading()) {
+        @if (subjects().length > 0) {
+          <div class="subjects-grid">
+            @for (subject of subjects(); track subject.id) {
+              <article class="subject-card card">
+                <span class="subject-card__label">Subject</span>
+                <h2 class="subject-card__name">{{ subject.name }}</h2>
+              </article>
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            icon="📘"
+            title="No subjects yet"
+            [message]="'Add the first subject for ' + selectedClassName() + '.'"
+            actionLabel="New subject"
+            (action)="openCreateForm()"
+          />
+        }
+      }
+    } @else {
+      <app-empty-state
+        icon="🏫"
+        title="No classes yet"
+        message="Create a class before adding subjects."
+        actionLabel="Go to classes"
+        (action)="goToClasses()"
+      />
+    }
+  }
+</div>
+
+<app-subject-form-modal
+  [open]="formOpen()"
+  [className]="selectedClassName()"
+  [submitting]="formSubmitting()"
+  [serverError]="formError()"
+  (submitted)="createSubject($event)"
+  (cancelled)="closeCreateForm()"
+/>
