@@ -41,7 +41,19 @@ public sealed class GetAllAssignmentsQueryHandler
                 x.Deadline,
                 x.MaxMarks,
                 x.Status.ToString(),
-                x.CreatedAt))
+                x.CreatedAt,
+                _context.Subjects
+                    .Where(s => s.Id == x.SubjectId)
+                    .Select(s => s.Name)
+                    .FirstOrDefault(),
+                _context.Classes
+                    .Where(c => c.Id == x.ClassId)
+                    .Select(c => c.Name)
+                    .FirstOrDefault(),
+                _context.Users
+                    .Where(u => u.Id == x.TeacherId)
+                    .Select(u => u.FullName)
+                    .FirstOrDefault()))
             .ToListAsync(cancellationToken);
 
         var result = new PaginatedList<AssignmentListDto>(

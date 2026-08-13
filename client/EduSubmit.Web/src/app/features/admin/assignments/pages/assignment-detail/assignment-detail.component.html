@@ -1,66 +1,76 @@
-<section class="assignment-detail-page">
-  <header class="page-header">
+<section class="page">
+  <header class="page__header">
     <button type="button" class="back-button" (click)="goBack()">
-      ← Back to Assignments
+      <span class="material-icons">arrow_back</span>
+      Back to Assignments
     </button>
   </header>
 
-  @if (loading()) {
-    <app-loading />
+  @if (loading() || refsLoading()) {
+    <app-loading message="Loading assignment..." />
   } @else if (error()) {
     <div class="error-state">
       <p>{{ error() }}</p>
-      <button type="button" (click)="retry()">Retry</button>
+      <button type="button" class="retry-btn" (click)="retry()">Retry</button>
     </div>
-  } @else if (assignment(); as item) {
-    <article class="assignment-card">
-      <div class="assignment-header">
+  } @else if (assignmentWithNames(); as item) {
+    <article class="detail-card">
+      <div class="detail-card__header">
         <div>
           <h1>{{ item.title }}</h1>
-
-          <app-badge
-            [text]="item.status"
-            [variant]="getStatusVariant(item.status)"
-          />
+          <app-badge [text]="item.status" [variant]="getStatusVariant(item.status)" />
         </div>
       </div>
 
-      <div class="assignment-description">
+      <div class="detail-card__description">
         <h2>Description</h2>
         <p>{{ item.description }}</p>
       </div>
 
-      <dl class="assignment-information">
-        <div>
-          <dt>Subject ID</dt>
-          <dd>{{ item.subjectId }}</dd>
+      <div class="detail-card__info-grid">
+        <div class="info-item">
+          <span class="material-icons">subject</span>
+          <div>
+            <dt>Subject</dt>
+            <dd>{{ item.subjectName }}</dd>
+          </div>
         </div>
-
-        <div>
-          <dt>Class ID</dt>
-          <dd>{{ item.classId }}</dd>
+        <div class="info-item">
+          <span class="material-icons">class</span>
+          <div>
+            <dt>Class</dt>
+            <dd>{{ item.className }}</dd>
+          </div>
         </div>
-
-        <div>
-          <dt>Teacher ID</dt>
-          <dd>{{ item.teacherId }}</dd>
+        <div class="info-item">
+          <span class="material-icons">person</span>
+          <div>
+            <dt>Teacher</dt>
+            <dd>{{ item.teacherName }}</dd>
+          </div>
         </div>
-
-        <div>
-          <dt>Deadline</dt>
-          <dd>{{ item.deadline | date: 'medium' }}</dd>
+        <div class="info-item">
+          <span class="material-icons">event</span>
+          <div>
+            <dt>Deadline</dt>
+            <dd>{{ item.deadline | date: 'medium' }}</dd>
+          </div>
         </div>
-
-        <div>
-          <dt>Maximum Marks</dt>
-          <dd>{{ item.maxMarks }}</dd>
+        <div class="info-item">
+          <span class="material-icons">score</span>
+          <div>
+            <dt>Maximum Marks</dt>
+            <dd>{{ item.maxMarks }}</dd>
+          </div>
         </div>
-
-        <div>
-          <dt>Created At</dt>
-          <dd>{{ item.createdAt | date: 'medium' }}</dd>
+        <div class="info-item">
+          <span class="material-icons">calendar_today</span>
+          <div>
+            <dt>Created At</dt>
+            <dd>{{ item.createdAt | date: 'medium' }}</dd>
+          </div>
         </div>
-      </dl>
+      </div>
     </article>
   }
 </section>

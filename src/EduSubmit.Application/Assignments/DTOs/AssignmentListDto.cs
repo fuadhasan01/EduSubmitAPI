@@ -10,4 +10,7 @@ public sealed record AssignmentListDto(
     DateTime Deadline,
     decimal MaxMarks,
     string Status,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? SubjectName = null,
+    string? ClassName = null,
+    string? TeacherName = null);

@@ -35,7 +35,19 @@ public sealed class GetAssignmentsForTeacherQueryHandler(
                 x.Deadline,
                 x.MaxMarks,
                 x.Status.ToString(),
-                x.CreatedAt));
+                x.CreatedAt,
+                context.Subjects
+                    .Where(s => s.Id == x.SubjectId)
+                    .Select(s => s.Name)
+                    .FirstOrDefault(),
+                context.Classes
+                    .Where(c => c.Id == x.ClassId)
+                    .Select(c => c.Name)
+                    .FirstOrDefault(),
+                context.Users
+                    .Where(u => u.Id == x.TeacherId)
+                    .Select(u => u.FullName)
+                    .FirstOrDefault()));
 
         var totalCount = await query.CountAsync(cancellationToken);
 

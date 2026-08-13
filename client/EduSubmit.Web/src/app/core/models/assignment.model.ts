@@ -1,6 +1,6 @@
 export enum AssignmentStatus {
   Draft = 'Draft',
-  Published = 'Published'
+  Published = 'Published',
 }
 
 export interface Assignment {
@@ -8,8 +8,11 @@ export interface Assignment {
   title: string;
   description: string;
   subjectId: string;
+  subjectName?: string;
   classId: string;
+  className?: string;
   teacherId: string;
+  teacherName?: string;
   deadline: string;
   maxMarks: number;
   status: string;

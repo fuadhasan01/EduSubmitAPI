@@ -1,5 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Assignment, AssignmentStatus } from '../../../../../core/models/assignment.model';
@@ -28,6 +35,21 @@ export class AssignmentDetailComponent implements OnInit {
   protected readonly loading = signal(false);
   protected readonly actionLoading = signal(false);
   protected readonly error = signal<string | null>(null);
+
+  protected readonly assignmentWithNames = computed(() => {
+    const item = this.assignment();
+
+    if (!item) {
+      return null;
+    }
+
+    return {
+      ...item,
+      subjectName: item.subjectName ?? item.subjectId,
+      className: item.className ?? item.classId,
+      teacherName: item.teacherName ?? item.teacherId,
+    };
+  });
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -83,9 +105,7 @@ export class AssignmentDetailComponent implements OnInit {
       error: (err) => {
         this.actionLoading.set(false);
         this.toast.error(
-          err?.error?.detail ??
-            err?.error?.title ??
-            'Failed to publish assignment.',
+          err?.error?.detail ?? err?.error?.title ?? 'Failed to publish assignment.',
         );
       },
     });
@@ -109,9 +129,7 @@ export class AssignmentDetailComponent implements OnInit {
       error: (err) => {
         this.actionLoading.set(false);
         this.toast.error(
-          err?.error?.detail ??
-            err?.error?.title ??
-            'Failed to unpublish assignment.',
+          err?.error?.detail ?? err?.error?.title ?? 'Failed to unpublish assignment.',
         );
       },
     });
@@ -124,9 +142,7 @@ export class AssignmentDetailComponent implements OnInit {
       return;
     }
 
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${item.title}"?`,
-    );
+    const confirmed = window.confirm(`Are you sure you want to delete "${item.title}"?`);
 
     if (!confirmed) {
       return;
@@ -142,11 +158,7 @@ export class AssignmentDetailComponent implements OnInit {
       },
       error: (err) => {
         this.actionLoading.set(false);
-        this.toast.error(
-          err?.error?.detail ??
-            err?.error?.title ??
-            'Failed to delete assignment.',
-        );
+        this.toast.error(err?.error?.detail ?? err?.error?.title ?? 'Failed to delete assignment.');
       },
     });
   }

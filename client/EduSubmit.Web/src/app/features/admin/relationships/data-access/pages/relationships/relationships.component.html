@@ -2,7 +2,8 @@
   <header class="page__header">
     <div class="page__heading">
       <span class="eyebrow">Admin · Relationships</span>
-      <h1 class="page__title">Assignments &amp; enrollment</h1>
+      <h1 class="page__title">Teacher &amp; Student Management</h1>
+      <p class="page__subtitle">Assign teachers to subjects and enroll students in classes.</p>
     </div>
   </header>
 
@@ -18,25 +19,32 @@
     } @else {
       <div class="relationships-grid">
         <!-- Assign teacher panel -->
-        <section class="card panel">
+        <section class="panel panel--teacher">
           <div class="panel__header">
-            <span class="panel__eyebrow">Teachers</span>
-            <h2 class="panel__title">Assign teacher to subject</h2>
+            <div class="panel__icon">
+              <span class="material-icons">person_add</span>
+            </div>
+            <div>
+              <span class="panel__eyebrow">Teachers</span>
+              <h2 class="panel__title">Assign teacher to subject</h2>
+            </div>
           </div>
 
           <div class="panel__body">
-            <span class="panel__label">Class</span>
-            <div class="chip-row">
-              @for (schoolClass of classes(); track schoolClass.id) {
-                <button
-                  type="button"
-                  class="chip"
-                  [class.chip--active]="assignClassId() === schoolClass.id"
-                  (click)="selectAssignClass(schoolClass)"
-                >
-                  {{ schoolClass.name }}
-                </button>
-              }
+            <div class="chip-group">
+              <label class="chip-group__label">Select a class</label>
+              <div class="chip-row">
+                @for (schoolClass of classes(); track schoolClass.id) {
+                  <button
+                    type="button"
+                    class="chip"
+                    [class.chip--active]="assignClassId() === schoolClass.id"
+                    (click)="selectAssignClass(schoolClass)"
+                  >
+                    {{ schoolClass.name }}
+                  </button>
+                }
+              </div>
             </div>
 
             @if (assignClassId()) {
@@ -48,55 +56,69 @@
                     icon="📘"
                     title="No subjects in this class"
                     message="Add a subject to this class first."
+                    class="compact-empty"
                   />
                 } @else if (teachers().length === 0) {
                   <app-empty-state
                     icon="🧑‍🏫"
                     title="No teachers available"
                     message="Create a user with the Teacher role first."
+                    class="compact-empty"
                   />
                 } @else {
                   <form class="form" [formGroup]="assignForm" (ngSubmit)="submitAssignTeacher()">
-                    <label class="field">
-                      <span>Subject</span>
-                      <select
-                        class="field__control"
-                        formControlName="subjectId"
-                        [attr.aria-invalid]="
-                          assignForm.controls.subjectId.touched && assignForm.controls.subjectId.invalid
-                        "
-                      >
-                        <option value="" disabled>Select a subject</option>
-                        @for (subject of assignSubjects(); track subject.id) {
-                          <option [value]="subject.id">{{ subject.name }}</option>
+                    <div class="form-row">
+                      <label class="field">
+                        <span>Subject</span>
+                        <select
+                          class="field__control"
+                          formControlName="subjectId"
+                          [attr.aria-invalid]="
+                            assignForm.controls.subjectId.touched &&
+                            assignForm.controls.subjectId.invalid
+                          "
+                        >
+                          <option value="" disabled>Select a subject</option>
+                          @for (subject of assignSubjects(); track subject.id) {
+                            <option [value]="subject.id">{{ subject.name }}</option>
+                          }
+                        </select>
+                        @if (
+                          assignForm.controls.subjectId.touched &&
+                          assignForm.controls.subjectId.invalid
+                        ) {
+                          <small class="field__error">Please select a subject.</small>
                         }
-                      </select>
-                      @if (assignForm.controls.subjectId.touched && assignForm.controls.subjectId.invalid) {
-                        <small class="field__error">Please select a subject.</small>
-                      }
-                    </label>
+                      </label>
 
-                    <label class="field">
-                      <span>Teacher</span>
-                      <select
-                        class="field__control"
-                        formControlName="teacherId"
-                        [attr.aria-invalid]="
-                          assignForm.controls.teacherId.touched && assignForm.controls.teacherId.invalid
-                        "
-                      >
-                        <option value="" disabled>Select a teacher</option>
-                        @for (teacher of teachers(); track teacher.id) {
-                          <option [value]="teacher.id">{{ teacher.fullName }}</option>
+                      <label class="field">
+                        <span>Teacher</span>
+                        <select
+                          class="field__control"
+                          formControlName="teacherId"
+                          [attr.aria-invalid]="
+                            assignForm.controls.teacherId.touched &&
+                            assignForm.controls.teacherId.invalid
+                          "
+                        >
+                          <option value="" disabled>Select a teacher</option>
+                          @for (teacher of teachers(); track teacher.id) {
+                            <option [value]="teacher.id">{{ teacher.fullName }}</option>
+                          }
+                        </select>
+                        @if (
+                          assignForm.controls.teacherId.touched &&
+                          assignForm.controls.teacherId.invalid
+                        ) {
+                          <small class="field__error">Please select a teacher.</small>
                         }
-                      </select>
-                      @if (assignForm.controls.teacherId.touched && assignForm.controls.teacherId.invalid) {
-                        <small class="field__error">Please select a teacher.</small>
-                      }
-                    </label>
+                      </label>
+                    </div>
 
                     @if (assignError()) {
-                      <p class="field__error field__error--banner" role="alert">{{ assignError() }}</p>
+                      <p class="field__error field__error--banner" role="alert">
+                        {{ assignError() }}
+                      </p>
                     }
 
                     <app-button
@@ -115,25 +137,32 @@
         </section>
 
         <!-- Enroll student panel -->
-        <section class="card panel">
+        <section class="panel panel--student">
           <div class="panel__header">
-            <span class="panel__eyebrow">Students</span>
-            <h2 class="panel__title">Enroll student in class</h2>
+            <div class="panel__icon">
+              <span class="material-icons">how_to_reg</span>
+            </div>
+            <div>
+              <span class="panel__eyebrow">Students</span>
+              <h2 class="panel__title">Enroll student in class</h2>
+            </div>
           </div>
 
           <div class="panel__body">
-            <span class="panel__label">Class</span>
-            <div class="chip-row">
-              @for (schoolClass of classes(); track schoolClass.id) {
-                <button
-                  type="button"
-                  class="chip"
-                  [class.chip--active]="enrollClassId() === schoolClass.id"
-                  (click)="selectEnrollClass(schoolClass)"
-                >
-                  {{ schoolClass.name }}
-                </button>
-              }
+            <div class="chip-group">
+              <label class="chip-group__label">Select a class</label>
+              <div class="chip-row">
+                @for (schoolClass of classes(); track schoolClass.id) {
+                  <button
+                    type="button"
+                    class="chip"
+                    [class.chip--active]="enrollClassId() === schoolClass.id"
+                    (click)="selectEnrollClass(schoolClass)"
+                  >
+                    {{ schoolClass.name }}
+                  </button>
+                }
+              </div>
             </div>
 
             @if (enrollClassId()) {
@@ -142,6 +171,7 @@
                   icon="🎓"
                   title="No students available"
                   message="Create a user with the Student role first."
+                  class="compact-empty"
                 />
               } @else {
                 <form class="form" [formGroup]="enrollForm" (ngSubmit)="submitEnrollStudent()">
@@ -151,7 +181,8 @@
                       class="field__control"
                       formControlName="studentId"
                       [attr.aria-invalid]="
-                        enrollForm.controls.studentId.touched && enrollForm.controls.studentId.invalid
+                        enrollForm.controls.studentId.touched &&
+                        enrollForm.controls.studentId.invalid
                       "
                     >
                       <option value="" disabled>Select a student</option>
@@ -159,13 +190,17 @@
                         <option [value]="student.id">{{ student.fullName }}</option>
                       }
                     </select>
-                    @if (enrollForm.controls.studentId.touched && enrollForm.controls.studentId.invalid) {
+                    @if (
+                      enrollForm.controls.studentId.touched && enrollForm.controls.studentId.invalid
+                    ) {
                       <small class="field__error">Please select a student.</small>
                     }
                   </label>
 
                   @if (enrollError()) {
-                    <p class="field__error field__error--banner" role="alert">{{ enrollError() }}</p>
+                    <p class="field__error field__error--banner" role="alert">
+                      {{ enrollError() }}
+                    </p>
                   }
 
                   <app-button

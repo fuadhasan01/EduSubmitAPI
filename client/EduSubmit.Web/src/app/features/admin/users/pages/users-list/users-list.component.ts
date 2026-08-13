@@ -11,6 +11,8 @@ import { TableComponent, TableColumn } from '../../../../../shared/ui/table/tabl
 import { LoadingComponent } from '../../../../../shared/ui/loading/loading.component';
 import { EmptyStateComponent } from '../../../../../shared/ui/empty-state/empty-state.component';
 import { ButtonComponent } from '../../../../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../../../../shared/ui/badge/badge.component';
+import { PaginationComponent } from '../../../../../shared/ui/pagination/pagination.component';
 import { ConfirmationDialogComponent } from '../../../../../shared/ui/confirmation-dialog/confirmation-dialog.component';
 import { ToastService } from '../../../../../shared/ui/toast/toast.service';
 
@@ -22,8 +24,11 @@ interface UserRow {
   id: string;
   fullName: string;
   email: string;
+  role: UserRole;
   roleLabel: string;
+  isActive: boolean;
   statusLabel: string;
+  statusVariant: 'success' | 'danger';
   createdAt: string;
 }
 
@@ -41,88 +46,13 @@ const ROLE_LABELS: Record<UserRole, string> = {
     LoadingComponent,
     EmptyStateComponent,
     ButtonComponent,
+    BadgeComponent,
+    PaginationComponent,
     ConfirmationDialogComponent,
     UserFormModalComponent,
   ],
-  template: `
-    <section class="user-list">
-      <header class="user-list__header">
-        <h1>Users</h1>
-        <app-button label="New user" variant="primary" (clicked)="openCreateForm()" />
-      </header>
-
-      <app-loading [visible]="loading()" message="Loading users..." />
-
-      @if (!loading()) {
-        @if (rows().length > 0) {
-          <app-table [columns]="columns" [rows]="rows()" (rowClicked)="onRowClicked($event)" />
-
-          @if (selectedUser(); as user) {
-            <div class="user-list__selection">
-              <span>{{ user.fullName }} selected</span>
-              <app-button
-                label="Deactivate"
-                variant="danger"
-                [disabled]="!user.isActive"
-                (clicked)="requestDeactivate()"
-              />
-              <app-button label="Clear" variant="secondary" (clicked)="clearSelection()" />
-            </div>
-          }
-
-          <nav class="user-list__pagination" aria-label="Pagination">
-            <app-button
-              label="Previous"
-              variant="secondary"
-              [disabled]="pageNumber() <= 1"
-              (clicked)="goToPage(pageNumber() - 1)"
-            />
-            <span
-              >Page {{ pageNumber() }} of {{ totalPages() || 1 }} ({{ totalCount() }} users)</span
-            >
-            <app-button
-              label="Next"
-              variant="secondary"
-              [disabled]="pageNumber() >= totalPages()"
-              (clicked)="goToPage(pageNumber() + 1)"
-            />
-          </nav>
-        } @else {
-          <app-empty-state
-            icon="👤"
-            title="No users yet"
-            message="Create your first user to get started."
-            actionLabel="New user"
-            (action)="openCreateForm()"
-          />
-        }
-      }
-    </section>
-
-    <app-user-form-modal
-      [open]="formOpen()"
-      [submitting]="formSubmitting()"
-      [serverError]="formError()"
-      (submitted)="createUser($event)"
-      (cancelled)="closeCreateForm()"
-    />
-
-    <app-confirmation-dialog
-      [open]="!!deactivateTarget()"
-      title="Deactivate user"
-      [message]="
-        'Are you sure you want to deactivate ' +
-        (deactivateTarget()?.fullName ?? '') +
-        '? They will no longer be able to sign in.'
-      "
-      confirmLabel="Deactivate"
-      [danger]="true"
-      [loading]="deactivating()"
-      (confirmed)="confirmDeactivate()"
-      (cancelled)="cancelDeactivate()"
-    />
-  `,
-  styleUrl: './user-list.component.scss',
+  templateUrl: './user-list.component.html',
+  styleUrls: ['./user-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserListComponent implements OnInit {
@@ -143,9 +73,16 @@ export class UserListComponent implements OnInit {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
+      role: user.role,
       roleLabel: ROLE_LABELS[user.role] ?? 'Unknown',
+      isActive: user.isActive,
       statusLabel: user.isActive ? 'Active' : 'Deactivated',
-      createdAt: new Date(user.createdAt!).toLocaleDateString(),
+      statusVariant: user.isActive ? 'success' : 'danger',
+      createdAt: new Date(user.createdAt!).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }),
     })),
   );
 
@@ -188,21 +125,22 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  protected goToPage(page: number): void {
-    if (
-      page < 1 ||
-      (this.totalPages() > 0 && page > this.totalPages()) ||
-      page === this.pageNumber()
-    ) {
+  protected onPageChanged(page: number): void {
+    if (page < 1 || page > this.totalPages() || page === this.pageNumber()) {
       return;
     }
-
     this.pageNumber.set(page);
     this.loadUsers();
+    this.clearSelection();
   }
 
   protected onRowClicked(row: UserRow): void {
-    this.selectedUserId.set(row.id);
+    // Toggle selection: if same row, deselect; otherwise select the new row
+    if (this.selectedUserId() === row.id) {
+      this.clearSelection();
+    } else {
+      this.selectedUserId.set(row.id);
+    }
   }
 
   protected clearSelection(): void {
@@ -250,9 +188,7 @@ export class UserListComponent implements OnInit {
 
   protected confirmDeactivate(): void {
     const target = this.deactivateTarget();
-    if (!target) {
-      return;
-    }
+    if (!target) return;
 
     this.deactivating.set(true);
 

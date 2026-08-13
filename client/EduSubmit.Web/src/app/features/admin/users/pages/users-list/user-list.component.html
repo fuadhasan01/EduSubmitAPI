@@ -1,0 +1,84 @@
+<section class="user-list">
+  <header class="user-list__header">
+    <div>
+      <h1>Users</h1>
+      <p class="user-list__subtitle">Manage all users in the system</p>
+    </div>
+    <app-button label="New user" variant="primary" (clicked)="openCreateForm()" />
+  </header>
+
+  <app-loading [visible]="loading()" message="Loading users..." />
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <div class="user-list__table-wrapper">
+        <app-table [columns]="columns" [rows]="rows()" (rowClicked)="onRowClicked($event)" />
+      </div>
+
+      @if (selectedUser(); as user) {
+        <div class="user-list__selection">
+          <div class="user-list__selection-info">
+            <span class="material-icons">person</span>
+            <span>
+              <strong>{{ user.fullName }}</strong>
+              <span class="selection-email">{{ user.email }}</span>
+            </span>
+          </div>
+          <div class="user-list__selection-actions">
+            <app-button
+              label="Deactivate"
+              variant="danger"
+              [disabled]="!user.isActive"
+              (clicked)="requestDeactivate()"
+            />
+            <app-button label="Clear" variant="ghost" (clicked)="clearSelection()" />
+          </div>
+        </div>
+      }
+
+      <div class="user-list__pagination">
+        <app-pagination
+          [currentPage]="pageNumber()"
+          [totalPages]="totalPages()"
+          [hasPreviousPage]="pageNumber() > 1"
+          [hasNextPage]="pageNumber() < totalPages()"
+          (pageChanged)="onPageChanged($event)"
+        />
+        <span class="pagination-info">
+          {{ totalCount() }} user{{ totalCount() !== 1 ? 's' : '' }} total
+        </span>
+      </div>
+    } @else {
+      <app-empty-state
+        icon="👤"
+        title="No users yet"
+        message="Create your first user to get started."
+        actionLabel="New user"
+        (action)="openCreateForm()"
+      />
+    }
+  }
+</section>
+
+<app-user-form-modal
+  [open]="formOpen()"
+  [submitting]="formSubmitting()"
+  [serverError]="formError()"
+  (submitted)="createUser($event)"
+  (cancelled)="closeCreateForm()"
+/>
+
+<app-confirmation-dialog
+  [open]="!!deactivateTarget()"
+  title="Deactivate user"
+  [message]="
+    'Are you sure you want to deactivate ' +
+    (deactivateTarget()?.fullName ?? '') +
+    '? They will no longer be able to sign in.'
+  "
+  confirmLabel="Deactivate"
+  [danger]="true"
+  [loading]="deactivating()"
+  (confirmed)="confirmDeactivate()"
+  (cancelled)="cancelDeactivate()"
+/>

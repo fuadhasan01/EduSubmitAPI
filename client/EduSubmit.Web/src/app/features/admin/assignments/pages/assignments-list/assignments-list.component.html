@@ -1,33 +1,64 @@
-<section class="assignments-page">
-  <header class="page-header">
-    <div>
-      <h1>Assignments</h1>
-      <p>View all assignments in the system.</p>
+<section class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Admin · Assignments</span>
+      <h1 class="page__title">Assignments</h1>
+      <p class="page__subtitle">Manage all assignments across the system.</p>
     </div>
   </header>
 
-  @if (loading()) {
-    <app-loading />
+  @if (loading() || refsLoading()) {
+    <app-loading message="Loading assignments..." />
   } @else if (error()) {
     <div class="error-state">
       <p>{{ error() }}</p>
-      <button type="button" (click)="retry()">Retry</button>
+      <button type="button" class="retry-btn" (click)="retry()">Retry</button>
     </div>
   } @else if (assignments().length === 0) {
     <app-empty-state
-      title="No assignments found"
-      message="There are no assignments available."
+      icon="📋"
+      title="No assignments yet"
+      message="Assignments will appear here once created by teachers."
     />
   } @else {
     <div class="assignment-summary">
-      <span>Total assignments: {{ totalCount() }}</span>
+      <span>{{ totalCount() }} assignment{{ totalCount() !== 1 ? 's' : '' }} total</span>
     </div>
 
-    <app-table
-      [columns]="columns"
-      [rows]="assignments()"
-      (rowClicked)="openAssignment($event)"
-    />
+    <div class="assignment-grid">
+      @for (item of assignmentsWithNames(); track item.id) {
+        <article class="assignment-card" (click)="openAssignment(item)">
+          <div class="assignment-card__header">
+            <h2 class="assignment-card__title">{{ item.title }}</h2>
+            <app-badge
+              [text]="item.status"
+              [variant]="item.status === 'Published' ? 'success' : 'default'"
+            />
+          </div>
+          <div class="assignment-card__meta">
+            <div class="meta-item">
+              <span class="material-icons">subject</span>
+              <span>{{ item.subjectName }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">class</span>
+              <span>{{ item.className }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">person</span>
+              <span>{{ item.teacherName }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">event</span>
+              <span>Due: {{ item.deadline | date: 'mediumDate' }}</span>
+            </div>
+          </div>
+          <div class="assignment-card__footer">
+            <span class="marks">Max marks: {{ item.maxMarks }}</span>
+          </div>
+        </article>
+      }
+    </div>
 
     <app-pagination
       [currentPage]="currentPage()"

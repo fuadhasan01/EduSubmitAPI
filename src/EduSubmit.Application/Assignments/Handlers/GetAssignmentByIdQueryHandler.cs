@@ -38,6 +38,18 @@ public sealed class GetAssignmentByIdQueryHandler
             .Select(x => new
             {
                 Assignment = x,
+                SubjectName = _context.Subjects
+                    .Where(s => s.Id == x.SubjectId)
+                    .Select(s => s.Name)
+                    .FirstOrDefault(),
+                ClassName = _context.Classes
+                    .Where(c => c.Id == x.ClassId)
+                    .Select(c => c.Name)
+                    .FirstOrDefault(),
+                TeacherName = _context.Users
+                    .Where(u => u.Id == x.TeacherId)
+                    .Select(u => u.FullName)
+                    .FirstOrDefault(),
                 IsTeacher = x.TeacherId == userId,
                 IsStudent = _context.StudentClassEnrollments.Any(e =>
                     e.StudentId == userId &&
@@ -78,6 +90,9 @@ public sealed class GetAssignmentByIdQueryHandler
                 x.Deadline,
                 x.MaxMarks,
                 x.Status.ToString(),
-                x.CreatedAt));
+                x.CreatedAt,
+                assignment.SubjectName,
+                assignment.ClassName,
+                assignment.TeacherName));
     }
 }

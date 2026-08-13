@@ -5,7 +5,7 @@ export const ASSIGNMENTS_ROUTES: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/assignments-list/assignments-list.component').then(
-        (m) => m.AssignmentsListComponent,
+        (m) => m.AssignmentListComponent,
       ),
   },
   {

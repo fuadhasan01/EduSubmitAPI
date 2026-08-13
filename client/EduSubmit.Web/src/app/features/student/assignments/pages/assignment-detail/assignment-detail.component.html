@@ -22,14 +22,24 @@
 
       <section class="detail-card card">
         <div class="detail-card__badges">
-          <span class="badge" [class.badge--success]="a.status === 'Published'">{{ a.status }}</span>
-          <span class="badge" [class.badge--warning]="!deadlinePassed()" [class.badge--muted]="deadlinePassed()">
+          <span class="badge" [class.badge--success]="a.status === 'Published'">{{
+            a.status
+          }}</span>
+          <span
+            class="badge"
+            [class.badge--warning]="!deadlinePassed()"
+            [class.badge--muted]="deadlinePassed()"
+          >
             {{ deadlinePassed() ? 'Deadline passed' : 'Due ' + deadlineLabel() }}
           </span>
           <span class="badge badge--muted">{{ a.maxMarks }} marks</span>
         </div>
 
         <p class="detail-card__description">{{ a.description }}</p>
+
+        <div class="detail-card__meta">
+          <p><strong>Teacher:</strong> {{ a.teacherName ?? 'Unknown teacher' }}</p>
+        </div>
 
         <div class="detail-card__actions">
           <app-button label="Go to submission" variant="primary" (clicked)="goToSubmission()" />
