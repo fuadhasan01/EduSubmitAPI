@@ -34,7 +34,7 @@ import { AssignmentApiService } from '../assignments/data-access/assignment-api.
             [value]="counts().assignments"
           />
           <app-dashboard-card
-            icon="submission"
+            icon="assignment_turned_in"
             label="Submissions"
             [value]="counts().submissions"
           />

@@ -1,106 +1,126 @@
 <form class="assignment-form" [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="form-header">
-    <h1>{{ mode() === 'create' ? 'Create Assignment' : 'Edit Assignment' }}</h1>
-    <p>
-      {{ mode() === 'create'
-        ? 'Create a new assignment for your class.'
-        : 'Update the assignment details.' }}
-    </p>
-  </div>
+  <div class="form-shell">
+    <header class="form-header">
+      <div class="header-copy">
+        <span class="eyebrow">
+          {{ mode() === 'create' ? 'New assignment' : 'Update assignment' }}
+        </span>
+        <h1>{{ mode() === 'create' ? 'Create Assignment' : 'Edit Assignment' }}</h1>
+      </div>
 
-  @if (serverError()) {
-    <div class="server-error">
-      {{ serverError() }}
+      <div class="status-tag">
+        <span class="material-icons">edit_note</span>
+        {{ mode() === 'create' ? 'Draft setup' : 'Revision mode' }}
+      </div>
+    </header>
+
+    @if (serverError()) {
+      <div class="server-error">
+        <span class="material-icons">error_outline</span>
+        <span>{{ serverError() }}</span>
+      </div>
+    }
+
+    <div class="form-grid">
+      <div class="form-panel">
+        <div class="panel-title">
+          <span class="material-icons">article</span>
+          Assignment Details
+        </div>
+
+        <app-form-field label="Title" [required]="true">
+          <input type="text" formControlName="title" placeholder="e.g. Algebra Quiz 01" />
+        </app-form-field>
+
+        @if (form.controls.title.invalid && form.controls.title.touched) {
+          <div class="field-error">Title is required.</div>
+        }
+
+        <app-form-field label="Description" [required]="true">
+          <textarea
+            formControlName="description"
+            rows="7"
+            placeholder="Add clear instructions, expectations, and submission notes..."
+          ></textarea>
+        </app-form-field>
+
+        @if (form.controls.description.invalid && form.controls.description.touched) {
+          <div class="field-error">Description is required.</div>
+        }
+      </div>
+
+      <div class="form-panel sidebar-panel">
+        <div class="panel-title">
+          <span class="material-icons">settings</span>
+          Scheduling & Scoring
+        </div>
+
+        <app-form-field
+          label="Subject ID"
+          [required]="true"
+          hint="Use the subject linked to this class."
+        >
+          <input type="text" formControlName="subjectId" placeholder="Subject ID" />
+        </app-form-field>
+
+        @if (form.controls.subjectId.invalid && form.controls.subjectId.touched) {
+          <div class="field-error">Subject ID is required.</div>
+        }
+
+        <app-form-field
+          label="Class ID"
+          [required]="true"
+          hint="This is the target class for the assignment."
+        >
+          <input type="text" formControlName="classId" placeholder="Class ID" />
+        </app-form-field>
+
+        @if (form.controls.classId.invalid && form.controls.classId.touched) {
+          <div class="field-error">Class ID is required.</div>
+        }
+
+        <app-form-field label="Deadline" [required]="true">
+          <input type="datetime-local" formControlName="deadline" />
+        </app-form-field>
+
+        @if (form.controls.deadline.invalid && form.controls.deadline.touched) {
+          <div class="field-error">Deadline is required.</div>
+        }
+
+        <app-form-field label="Maximum Marks" [required]="true">
+          <input type="number" formControlName="maxMarks" min="1" step="1" />
+        </app-form-field>
+
+        @if (form.controls.maxMarks.invalid && form.controls.maxMarks.touched) {
+          <div class="field-error">Maximum marks must be at least 1.</div>
+        }
+
+        @if (mode() === 'create') {
+          <label class="publish-option">
+            <input type="checkbox" formControlName="publishImmediately" />
+            <span>Publish immediately</span>
+          </label>
+        }
+      </div>
     </div>
-  }
 
-  <app-form-field label="Title" [required]="true">
-    <input
-      type="text"
-      formControlName="title"
-      placeholder="Assignment title"
-    />
-  </app-form-field>
+    <div class="form-actions">
+      <app-button
+        type="button"
+        label="Cancel"
+        variant="secondary"
+        [disabled]="submitting()"
+        (clicked)="cancel()"
+      >
+      </app-button>
 
-  @if (form.controls.title.invalid && form.controls.title.touched) {
-    <div class="field-error">Title is required.</div>
-  }
-
-  <app-form-field label="Description" [required]="true">
-    <textarea
-      formControlName="description"
-      rows="6"
-      placeholder="Assignment description"
-    ></textarea>
-  </app-form-field>
-
-  @if (form.controls.description.invalid && form.controls.description.touched) {
-    <div class="field-error">Description is required.</div>
-  }
-
-  <app-form-field label="Subject ID" [required]="true">
-    <input
-      type="text"
-      formControlName="subjectId"
-      placeholder="Subject ID"
-    />
-  </app-form-field>
-
-  @if (form.controls.subjectId.invalid && form.controls.subjectId.touched) {
-    <div class="field-error">Subject ID is required.</div>
-  }
-
-  <app-form-field label="Class ID" [required]="true">
-    <input
-      type="text"
-      formControlName="classId"
-      placeholder="Class ID"
-    />
-  </app-form-field>
-
-  @if (form.controls.classId.invalid && form.controls.classId.touched) {
-    <div class="field-error">Class ID is required.</div>
-  }
-
-  <app-form-field label="Deadline" [required]="true">
-    <input type="datetime-local" formControlName="deadline" />
-  </app-form-field>
-
-  @if (form.controls.deadline.invalid && form.controls.deadline.touched) {
-    <div class="field-error">Deadline is required.</div>
-  }
-
-  <app-form-field label="Maximum Marks" [required]="true">
-    <input
-      type="number"
-      formControlName="maxMarks"
-      min="1"
-      step="1"
-    />
-  </app-form-field>
-
-  @if (form.controls.maxMarks.invalid && form.controls.maxMarks.touched) {
-    <div class="field-error">Maximum marks must be at least 1.</div>
-  }
-
-  @if (mode() === 'create') {
-    <label class="publish-option">
-      <input type="checkbox" formControlName="publishImmediately" />
-      <span>Publish immediately</span>
-    </label>
-  }
-
-  <div class="form-actions">
-    <app-button
-      type="button"
-      label="Cancel"
-      variant="secondary"
-      [disabled]="submitting()"
-      (clicked)="cancel()"
-    >
-    </app-button>
-
-    <app-button type="submit" [disabled]="submitting()" [loading]="submitting()" loadingLabel="Saving..."
-      [label]="mode() === 'create' ? 'Create Assignment' : 'Save Changes'"></app-button>
+      <app-button
+        type="submit"
+        [disabled]="submitting()"
+        [loading]="submitting()"
+        loadingLabel="Saving..."
+        [label]="mode() === 'create' ? 'Create Assignment' : 'Save Changes'"
+      ></app-button>
+    </div>
   </div>
 </form>

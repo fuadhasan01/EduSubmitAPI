@@ -16,7 +16,7 @@ export function getTeacherNavItems(): NavItem[] {
   return [
     { label: 'Dashboard', icon: 'dashboard', route: '/teacher' },
     { label: 'Assignments', icon: 'assignment', route: '/teacher/assignments' },
-    { label: 'Submissions', icon: 'submission', route: '/teacher/submissions' },
+    { label: 'Submissions', icon: 'assignment_turned_in', route: '/teacher/submissions' },
   ];
 }
 
@@ -24,6 +24,6 @@ export function getStudentNavItems(): NavItem[] {
   return [
     { label: 'Dashboard', icon: 'dashboard', route: '/student' },
     { label: 'Assignments', icon: 'assignment', route: '/student/assignments' },
-    { label: 'Submissions', icon: 'submission', route: '/student/submissions' },
+    { label: 'Submissions', icon: 'assignment_turned_in', route: '/student/submissions' },
   ];
 }

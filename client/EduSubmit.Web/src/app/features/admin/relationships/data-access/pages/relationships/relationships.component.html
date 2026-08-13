@@ -66,6 +66,31 @@
                     class="compact-empty"
                   />
                 } @else {
+                  <div class="relationship-summary">
+                    <div class="summary-header">
+                      <span class="material-icons">check_circle</span>
+                      <strong>Current allocations</strong>
+                    </div>
+
+                    @if ((assignedTeachers()[assignClassId() ?? ''] ?? []).length === 0) {
+                      <p class="summary-empty">No teacher has been assigned yet for this class.</p>
+                    } @else {
+                      <ul class="summary-list">
+                        @for (
+                          item of assignedTeachers()[assignClassId() ?? ''] ?? [];
+                          track item.subjectId + '-' + item.teacherId
+                        ) {
+                          <li>
+                            <span class="summary-label">
+                              {{ getSubjectName(item.subjectId) }}
+                            </span>
+                            <span class="summary-value">{{ item.teacherName }}</span>
+                          </li>
+                        }
+                      </ul>
+                    }
+                  </div>
+
                   <form class="form" [formGroup]="assignForm" (ngSubmit)="submitAssignTeacher()">
                     <div class="form-row">
                       <label class="field">
@@ -174,6 +199,29 @@
                   class="compact-empty"
                 />
               } @else {
+                <div class="relationship-summary relationship-summary--green">
+                  <div class="summary-header">
+                    <span class="material-icons">groups</span>
+                    <strong>Current class roster</strong>
+                  </div>
+
+                  @if ((enrolledStudents()[enrollClassId() ?? ''] ?? []).length === 0) {
+                    <p class="summary-empty">No students are enrolled in this class yet.</p>
+                  } @else {
+                    <ul class="summary-list">
+                      @for (
+                        item of enrolledStudents()[enrollClassId() ?? ''] ?? [];
+                        track item.studentId
+                      ) {
+                        <li>
+                          <span class="summary-label">Student</span>
+                          <span class="summary-value">{{ item.studentName }}</span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+
                 <form class="form" [formGroup]="enrollForm" (ngSubmit)="submitEnrollStudent()">
                   <label class="field">
                     <span>Student</span>

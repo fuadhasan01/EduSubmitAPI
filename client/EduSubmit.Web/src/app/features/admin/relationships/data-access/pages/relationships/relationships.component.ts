@@ -42,6 +42,9 @@ export class RelationshipsComponent implements OnInit {
   protected readonly assignSubjectsLoading = signal(false);
   protected readonly assignSubmitting = signal(false);
   protected readonly assignError = signal<string | null>(null);
+  protected readonly assignedTeachers = signal<
+    Record<string, Array<{ subjectId: string; teacherId: string; teacherName: string }>>
+  >({});
 
   protected readonly assignForm = this.fb.nonNullable.group({
     subjectId: ['', Validators.required],
@@ -52,6 +55,9 @@ export class RelationshipsComponent implements OnInit {
   protected readonly enrollClassId = signal<string | null>(null);
   protected readonly enrollSubmitting = signal(false);
   protected readonly enrollError = signal<string | null>(null);
+  protected readonly enrolledStudents = signal<
+    Record<string, Array<{ studentId: string; studentName: string }>>
+  >({});
 
   protected readonly enrollForm = this.fb.nonNullable.group({
     studentId: ['', Validators.required],
@@ -113,10 +119,29 @@ export class RelationshipsComponent implements OnInit {
       next: (subjects) => {
         this.assignSubjects.set(subjects);
         this.assignSubjectsLoading.set(false);
+        this.loadAssignedTeachers(classId);
       },
       error: () => {
         this.assignSubjectsLoading.set(false);
         this.toast.error('Failed to load subjects for this class.');
+      },
+    });
+  }
+
+  private loadAssignedTeachers(classId: string): void {
+    this.relationshipApi.getTeachersByClass(classId).subscribe({
+      next: (teachers) => {
+        this.assignedTeachers.update((current) => ({
+          ...current,
+          [classId]: teachers.map((item) => ({
+            subjectId: item.subjectId,
+            teacherId: item.teacherId,
+            teacherName: item.teacherName,
+          })),
+        }));
+      },
+      error: () => {
+        this.toast.error('Failed to load current teacher assignments.');
       },
     });
   }
@@ -136,6 +161,28 @@ export class RelationshipsComponent implements OnInit {
 
     this.relationshipApi.assignTeacher(subjectId, teacherId).subscribe({
       next: () => {
+        const classId = this.assignClassId();
+        const teacherName =
+          this.teachers().find((teacher) => teacher.id === teacherId)?.fullName ?? 'Teacher';
+
+        if (classId) {
+          this.assignedTeachers.update((current) => ({
+            ...current,
+            [classId]: [
+              ...(current[classId] ?? []),
+              {
+                subjectId,
+                teacherId,
+                teacherName,
+              },
+            ].sort((a, b) =>
+              (this.getSubjectName(a.subjectId) || '').localeCompare(
+                this.getSubjectName(b.subjectId) || '',
+              ),
+            ),
+          }));
+        }
+
         this.assignSubmitting.set(false);
         this.assignForm.reset({ subjectId: '', teacherId: '' });
         this.toast.success(`Teacher assigned to ${subjectName}.`);
@@ -159,6 +206,24 @@ export class RelationshipsComponent implements OnInit {
     this.enrollClassId.set(schoolClass.id);
     this.enrollForm.reset({ studentId: '' });
     this.enrollError.set(null);
+    this.loadEnrolledStudents(schoolClass.id);
+  }
+
+  private loadEnrolledStudents(classId: string): void {
+    this.relationshipApi.getStudentsByClass(classId).subscribe({
+      next: (students) => {
+        this.enrolledStudents.update((current) => ({
+          ...current,
+          [classId]: students.map((item) => ({
+            studentId: item.studentId,
+            studentName: item.studentName,
+          })),
+        }));
+      },
+      error: () => {
+        this.toast.error('Failed to load current student enrollments.');
+      },
+    });
   }
 
   protected submitEnrollStudent(): void {
@@ -177,6 +242,20 @@ export class RelationshipsComponent implements OnInit {
 
     this.relationshipApi.enrollStudent(classId, studentId).subscribe({
       next: () => {
+        const studentName =
+          this.students().find((student) => student.id === studentId)?.fullName ?? 'Student';
+
+        this.enrolledStudents.update((current) => ({
+          ...current,
+          [classId]: [
+            ...(current[classId] ?? []),
+            {
+              studentId,
+              studentName,
+            },
+          ].sort((a, b) => a.studentName.localeCompare(b.studentName)),
+        }));
+
         this.enrollSubmitting.set(false);
         this.enrollForm.reset({ studentId: '' });
         this.toast.success(`Student enrolled in ${className}.`);
@@ -188,5 +267,9 @@ export class RelationshipsComponent implements OnInit {
         );
       },
     });
+  }
+
+  getSubjectName(subjectId: string): string {
+    return this.assignSubjects().find((subject) => subject.id === subjectId)?.name ?? 'Subject';
   }
 }

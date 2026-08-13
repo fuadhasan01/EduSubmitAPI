@@ -68,4 +68,52 @@ public sealed class ClassesController : ControllerBase
             message = result.Error
         });
     }
+
+    [HttpGet("{classId:guid}/teachers")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<TeacherAssignmentResponse>),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetTeachersByClass(
+        Guid classId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetTeachersByClassQuery(classId),
+            cancellationToken);
+
+        if (result.IsSuccess)
+            return Ok(result.Value);
+
+        if (result.Error == "Class was not found.")
+            return NotFound(new { message = result.Error });
+
+        return BadRequest(new { message = result.Error });
+    }
+
+    [HttpGet("{classId:guid}/students")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<StudentEnrollmentResponse>),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetStudentsByClass(
+        Guid classId,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new GetStudentsByClassQuery(classId),
+            cancellationToken);
+
+        if (result.IsSuccess)
+            return Ok(result.Value);
+
+        if (result.Error == "Class was not found.")
+            return NotFound(new { message = result.Error });
+
+        return BadRequest(new { message = result.Error });
+    }
 }

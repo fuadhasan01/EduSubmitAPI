@@ -1,33 +1,68 @@
-<section class="submissions-page">
-  <header class="page-header">
-    <div>
-      <h1>Submissions</h1>
-      <p>View student submissions and their current results.</p>
+<section class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Admin · Submissions</span>
+      <h1 class="page__title">Submissions</h1>
+      <p class="page__subtitle">Review student submissions and grades.</p>
     </div>
   </header>
 
-  @if (loading()) {
-    <app-loading />
+  @if (loading() || refsLoading()) {
+    <app-loading message="Loading submissions..." />
   } @else if (error()) {
     <div class="error-state">
       <p>{{ error() }}</p>
-      <button type="button" (click)="retry()">Retry</button>
+      <button type="button" class="retry-btn" (click)="retry()">Retry</button>
     </div>
   } @else if (submissions().length === 0) {
     <app-empty-state
-      title="No submissions found"
-      message="There are no submissions available."
+      icon="📄"
+      title="No submissions yet"
+      message="Student submissions will appear here once they submit work."
     />
   } @else {
     <div class="submission-summary">
-      <span>Total submissions: {{ totalCount() }}</span>
+      <span>{{ totalCount() }} submission{{ totalCount() !== 1 ? 's' : '' }} total</span>
     </div>
 
-    <app-table
-      [columns]="columns"
-      [rows]="submissions()"
-      (rowClicked)="openSubmission($event)"
-    />
+    <div class="submission-grid">
+      @for (item of submissionsWithNames(); track item.id) {
+        <article class="submission-card" (click)="openSubmission(item)">
+          <div class="submission-card__header">
+            <div class="submission-card__title-group">
+              <h2 class="submission-card__title">{{ item.assignmentTitle }}</h2>
+              <span class="submission-card__student">{{ item.studentName }}</span>
+            </div>
+            <app-badge [text]="item.status" [variant]="getStatusVariant(item.status)" />
+          </div>
+          <div class="submission-card__meta">
+            <div class="meta-item">
+              <span class="material-icons">subject</span>
+              <span>{{ item.subjectName }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">class</span>
+              <span>{{ item.className }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">person</span>
+              <span>{{ item.teacherName }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="material-icons">event</span>
+              <span>Submitted: {{ item.submittedAt | date: 'mediumDate' }}</span>
+            </div>
+          </div>
+          <div class="submission-card__footer">
+            @if (item.marks !== null && item.marks !== undefined) {
+              <span class="marks">Marks: {{ item.marks }}</span>
+            } @else {
+              <span class="marks ungraded">Not graded</span>
+            }
+          </div>
+        </article>
+      }
+    </div>
 
     <app-pagination
       [currentPage]="currentPage()"
