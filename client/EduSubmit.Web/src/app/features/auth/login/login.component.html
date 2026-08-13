@@ -1,0 +1,63 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="brand-icon">📘</span>
+      <h1>EduSubmit</h1>
+      <p class="subtitle">Assignment &amp; Submission Management</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          <small class="error-text">Email is required.</small>
+        }
+        @if (form.controls.email.touched && form.controls.email.hasError('email')) {
+          <small class="error-text">Enter a valid email address.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
+        />
+        @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+          <small class="error-text">Password is required.</small>
+        }
+      </div>
+
+      @if (serverError()) {
+        <div class="server-error" role="alert">
+          <span class="material-icons">error_outline</span>
+          {{ serverError() }}
+        </div>
+      }
+
+      <app-button
+        type="submit"
+        label="Sign in"
+        loadingLabel="Signing in..."
+        variant="primary"
+        [fullWidth]="true"
+        [loading]="loading()"
+        class="submit-btn"
+      />
+    </form>
+
+    <p class="footer-text">&copy; {{ currentYear() }} EduSubmit. All rights reserved.</p>
+  </div>
+</div>
