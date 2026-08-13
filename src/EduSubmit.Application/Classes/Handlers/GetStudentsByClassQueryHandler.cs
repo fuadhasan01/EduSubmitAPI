@@ -28,18 +28,15 @@ public sealed class GetStudentsByClassQueryHandler
         if (!classExists)
             return Result<IReadOnlyList<StudentEnrollmentResponse>>.Failure("Class was not found.");
 
-        var enrollments = await _context.StudentClassEnrollments
-            .AsNoTracking()
-            .Where(x => x.ClassId == request.ClassId)
-            .Join(
-                _context.Users.AsNoTracking(),
-                enrollment => enrollment.StudentId,
-                student => student.Id,
-                (enrollment, student) => new StudentEnrollmentResponse(
+        var enrollments = await (
+                from enrollment in _context.StudentClassEnrollments.AsNoTracking()
+                join student in _context.Users.AsNoTracking() on enrollment.StudentId equals student.Id
+                where enrollment.ClassId == request.ClassId
+                orderby student.FullName
+                select new StudentEnrollmentResponse(
                     student.Id,
                     student.FullName,
                     enrollment.ClassId))
-            .OrderBy(x => x.StudentName)
             .ToListAsync(cancellationToken);
 
         return Result<IReadOnlyList<StudentEnrollmentResponse>>.Success(enrollments);

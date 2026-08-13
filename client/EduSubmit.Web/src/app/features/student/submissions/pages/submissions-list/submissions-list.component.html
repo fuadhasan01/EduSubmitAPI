@@ -4,6 +4,11 @@
       <span class="eyebrow">Student · Submissions</span>
       <h1 class="page__title">My submissions</h1>
     </div>
+
+    <div class="page__meta">
+      <span class="material-icons">task_alt</span>
+      {{ totalCount() }} submissions
+    </div>
   </header>
 
   <app-loading [visible]="loading()" message="Loading your submissions..." />
@@ -14,20 +19,28 @@
         @for (row of rows(); track row.id) {
           <article class="submission-card card" (click)="openSubmission(row.id)">
             <div class="submission-card__meta">
-              <span class="badge"
+              <span
+                class="badge"
                 [class.badge--success]="row.status === 'Graded'"
-                [class.badge--warning]="row.status === 'Late' || row.status === 'ReturnedForRevision'"
+                [class.badge--warning]="
+                  row.status === 'Late' || row.status === 'ReturnedForRevision'
+                "
                 [class.badge--muted]="row.status === 'Submitted'"
-              >{{ row.status }}</span>
+                >{{ row.status }}</span
+              >
               <span class="submission-card__date">{{ row.submittedAt }}</span>
             </div>
 
             <h2 class="submission-card__title">{{ row.assignmentTitle }}</h2>
 
             @if (row.marks !== null) {
-              <span class="submission-card__marks">{{ row.marks }} / {{ row.maxMarks ?? '—' }}</span>
+              <span class="submission-card__marks"
+                >{{ row.marks }} / {{ row.maxMarks ?? '—' }}</span
+              >
             } @else {
-              <span class="submission-card__marks submission-card__marks--pending">Not graded yet</span>
+              <span class="submission-card__marks submission-card__marks--pending"
+                >Not graded yet</span
+              >
             }
           </article>
         }

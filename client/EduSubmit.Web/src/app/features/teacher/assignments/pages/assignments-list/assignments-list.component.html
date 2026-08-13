@@ -5,7 +5,7 @@
       <p>Manage assignments created by you.</p>
     </div>
 
-  <app-button type="button" label="Create Assignment" (clicked)="createAssignment()"></app-button>
+    <app-button type="button" label="Create Assignment" (clicked)="createAssignment()"></app-button>
   </header>
 
   @if (loading()) {
@@ -14,8 +14,7 @@
     <div class="error-state">
       <p>{{ error() }}</p>
 
-      <app-button type="button" label="Retry" (clicked)="retry()">
-      </app-button>
+      <app-button type="button" label="Retry" (clicked)="retry()"> </app-button>
     </div>
   } @else if (assignments().length === 0) {
     <app-empty-state
@@ -29,7 +28,7 @@
 
     <app-table
       [columns]="columns"
-      [rows]="assignments()"
+      [rows]="displayAssignments()"
       (rowClicked)="openAssignment($event)"
     />
 

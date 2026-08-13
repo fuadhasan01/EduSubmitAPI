@@ -18,7 +18,17 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
   imports: [DashboardCardComponent, LoadingComponent, ErrorMessageComponent, DatePipe],
   template: `
     <div class="dashboard-container">
-      <h1 class="page-title">Student Dashboard</h1>
+      <div class="dashboard-header">
+        <div>
+          <span class="eyebrow">Overview</span>
+          <h1 class="page-title">Student Dashboard</h1>
+        </div>
+
+        <div class="header-pill">
+          <span class="material-icons">school</span>
+          Learning progress
+        </div>
+      </div>
 
       @if (loading()) {
         <app-loading />
@@ -33,29 +43,38 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
           />
 
           <app-dashboard-card
-            icon="submission"
+            icon="upload_file"
             label="My Submissions"
             [value]="counts().submitted"
           />
 
-          <app-dashboard-card icon="graded" label="Graded" [value]="counts().graded" />
+          <app-dashboard-card icon="verified" label="Graded" [value]="counts().graded" />
         </div>
 
         <div class="recent-section">
-          <h2>Recent Assignments</h2>
+          <div class="section-header">
+            <h2>Recent Assignments</h2>
+            <span class="section-meta">Latest 5</span>
+          </div>
 
           @if (recentAssignments().length === 0) {
-            <p class="empty-text">No assignments available.</p>
+            <div class="empty-state">
+              <span class="material-icons">assignment_turned_in</span>
+              <p>No assignments available yet.</p>
+            </div>
           } @else {
             <div class="assignment-list">
               @for (assignment of recentAssignments(); track assignment.id) {
                 <div class="assignment-item">
-                  <span class="assignment-title">
-                    {{ assignment.title }}
-                  </span>
+                  <div class="assignment-main">
+                    <span class="assignment-title">{{ assignment.title }}</span>
+                    <span class="assignment-meta">
+                      Due {{ assignment.deadline | date: 'mediumDate' }}
+                    </span>
+                  </div>
 
                   <span class="assignment-deadline">
-                    Due: {{ assignment.deadline | date: 'shortDate' }}
+                    {{ assignment.status }}
                   </span>
                 </div>
               }
@@ -63,18 +82,29 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
           }
         </div>
 
-        <div class="recent-section" style="margin-top: 1.5rem;">
-          <h2>Recent Submissions</h2>
+        <div class="recent-section recent-section--secondary">
+          <div class="section-header">
+            <h2>Recent Submissions</h2>
+            <span class="section-meta">Activity</span>
+          </div>
 
           @if (recentSubmissions().length === 0) {
-            <p class="empty-text">No submissions yet.</p>
+            <div class="empty-state">
+              <span class="material-icons">task_alt</span>
+              <p>No submissions yet. Start with your first assignment.</p>
+            </div>
           } @else {
             <div class="submission-list">
               @for (submission of recentSubmissions(); track submission.id) {
                 <div class="submission-item">
-                  <span class="submission-assignment">
-                    Assignment ID: {{ submission.assignmentId }}
-                  </span>
+                  <div class="submission-main">
+                    <span class="submission-assignment"
+                      >Assignment {{ submission.assignmentId }}</span
+                    >
+                    <span class="submission-meta">
+                      {{ submission.submittedAt | date: 'mediumDate' }}
+                    </span>
+                  </div>
 
                   <span
                     class="submission-status"
@@ -99,79 +129,164 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
       .dashboard-container {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0.5rem 0 2rem;
+      }
+
+      .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #5c6bc0;
+        margin-bottom: 0.5rem;
       }
 
       .page-title {
-        font-size: 1.75rem;
-        font-weight: 600;
+        font-size: clamp(2rem, 2.3vw, 2.5rem);
+        font-weight: 700;
         color: #1a237e;
-        margin-bottom: 2rem;
+        margin: 0;
+      }
+
+      .header-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #eef2ff 0%, #e8f1ff 100%);
+        border: 1px solid rgba(92, 107, 192, 0.12);
+        color: #3949ab;
+        font-weight: 600;
+        box-shadow: 0 6px 18px rgba(92, 107, 192, 0.08);
+      }
+
+      .header-pill .material-icons {
+        font-size: 18px;
       }
 
       .cards-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
       }
 
       .recent-section {
-        background: #fff;
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 18px;
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
       }
 
-      .recent-section h2 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #333;
+      .recent-section--secondary {
+        margin-top: 1.5rem;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
         margin-bottom: 1rem;
       }
 
-      .empty-text {
-        color: #999;
-        font-style: italic;
+      .recent-section h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+      }
+
+      .section-meta {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+
+      .empty-state {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.5rem 1rem;
+        border: 1px dashed rgba(148, 163, 184, 0.4);
+        border-radius: 12px;
+        background: rgba(248, 250, 252, 0.7);
+        color: #475569;
+      }
+
+      .empty-state .material-icons {
+        color: #94a3b8;
+      }
+
+      .empty-state p {
+        margin: 0;
+        font-weight: 500;
       }
 
       .assignment-list,
       .submission-list {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.9rem;
       }
 
       .assignment-item,
       .submission-item {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 1rem;
-        background: #f5f5f5;
-        border-radius: 8px;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.1rem;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f3f6ff 100%);
+        border: 1px solid rgba(148, 163, 184, 0.18);
       }
 
-      .assignment-title {
-        font-weight: 500;
-        color: #333;
+      .assignment-main,
+      .submission-main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .assignment-title,
+      .submission-assignment {
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      .assignment-meta,
+      .submission-meta {
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+
+      .assignment-deadline,
+      .submission-status {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        white-space: nowrap;
       }
 
       .assignment-deadline {
-        font-size: 0.85rem;
-        color: #777;
-      }
-
-      .submission-assignment {
-        font-weight: 500;
-        color: #333;
-      }
-
-      .submission-status {
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.25rem 0.75rem;
-        border-radius: 16px;
-        text-transform: uppercase;
+        background: #eef2ff;
+        color: #4f46e5;
       }
 
       .submission-status.submitted {

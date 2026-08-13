@@ -28,25 +28,17 @@ public sealed class GetTeachersByClassQueryHandler
         if (!classExists)
             return Result<IReadOnlyList<TeacherAssignmentResponse>>.Failure("Class was not found.");
 
-        var assignments = await _context.TeacherSubjectAssignments
-            .AsNoTracking()
-            .Where(x => _context.Subjects.Any(s => s.Id == x.SubjectId && s.ClassId == request.ClassId))
-            .Join(
-                _context.Subjects.AsNoTracking(),
-                assignment => assignment.SubjectId,
-                subject => subject.Id,
-                (assignment, subject) => new { assignment, subject })
-            .Join(
-                _context.Users.AsNoTracking(),
-                x => x.assignment.TeacherId,
-                teacher => teacher.Id,
-                (x, teacher) => new TeacherAssignmentResponse(
-                    x.subject.Id,
-                    x.subject.Name,
+        var assignments = await (
+                from assignment in _context.TeacherSubjectAssignments.AsNoTracking()
+                join subject in _context.Subjects.AsNoTracking() on assignment.SubjectId equals subject.Id
+                join teacher in _context.Users.AsNoTracking() on assignment.TeacherId equals teacher.Id
+                where subject.ClassId == request.ClassId
+                orderby subject.Name, teacher.FullName
+                select new TeacherAssignmentResponse(
+                    subject.Id,
+                    subject.Name,
                     teacher.Id,
                     teacher.FullName))
-            .OrderBy(x => x.SubjectName)
-            .ThenBy(x => x.TeacherName)
             .ToListAsync(cancellationToken);
 
         return Result<IReadOnlyList<TeacherAssignmentResponse>>.Success(assignments);

@@ -56,27 +56,39 @@
         </div>
 
         <app-form-field
-          label="Subject ID"
+          label="Class"
           [required]="true"
-          hint="Use the subject linked to this class."
+          hint="Choose the class this assignment belongs to."
         >
-          <input type="text" formControlName="subjectId" placeholder="Subject ID" />
-        </app-form-field>
-
-        @if (form.controls.subjectId.invalid && form.controls.subjectId.touched) {
-          <div class="field-error">Subject ID is required.</div>
-        }
-
-        <app-form-field
-          label="Class ID"
-          [required]="true"
-          hint="This is the target class for the assignment."
-        >
-          <input type="text" formControlName="classId" placeholder="Class ID" />
+          <select formControlName="classId">
+            <option value="" disabled>Select a class</option>
+            @for (schoolClass of classes(); track schoolClass.id) {
+              <option [value]="schoolClass.id">{{ schoolClass.name }}</option>
+            }
+          </select>
         </app-form-field>
 
         @if (form.controls.classId.invalid && form.controls.classId.touched) {
-          <div class="field-error">Class ID is required.</div>
+          <div class="field-error">Please select a class.</div>
+        }
+
+        <app-form-field
+          label="Subject"
+          [required]="true"
+          hint="Choose the subject for the selected class."
+        >
+          <select formControlName="subjectId" [disabled]="subjects().length === 0">
+            <option value="" disabled>
+              {{ subjects().length ? 'Select a subject' : 'Select a class first' }}
+            </option>
+            @for (subject of subjects(); track subject.id) {
+              <option [value]="subject.id">{{ subject.name }}</option>
+            }
+          </select>
+        </app-form-field>
+
+        @if (form.controls.subjectId.invalid && form.controls.subjectId.touched) {
+          <div class="field-error">Please select a subject.</div>
         }
 
         <app-form-field label="Deadline" [required]="true">

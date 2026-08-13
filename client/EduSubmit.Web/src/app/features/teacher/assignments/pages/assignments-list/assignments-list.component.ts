@@ -1,7 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { Assignment, AssignmentStatus } from '../../../../../core/models/assignment.model';
+import { ClassDto } from '../../../../../core/models/class.model';
+import { SubjectDto } from '../../../../../core/models/subject.model';
 import { BadgeComponent } from '../../../../../shared/ui/badge/badge.component';
 import { EmptyStateComponent } from '../../../../../shared/ui/empty-state/empty-state.component';
 import { LoadingComponent } from '../../../../../shared/ui/loading/loading.component';
@@ -11,6 +21,8 @@ import { ToastService } from '../../../../../shared/ui/toast/toast.service';
 import { ButtonComponent } from '../../../../../shared/ui/button/button.component';
 
 import { AssignmentApiService } from '../../data-access/assignment-api.service';
+import { ClassApiService } from '../../../../admin/classes/data-access/class-api.service';
+import { SubjectApiService } from '../../../../admin/subjects/data-access/subject-api.service';
 
 @Component({
   selector: 'app-teacher-assignments-list',
@@ -29,6 +41,8 @@ import { AssignmentApiService } from '../../data-access/assignment-api.service';
 })
 export class AssignmentsListComponent implements OnInit {
   private readonly assignmentApi = inject(AssignmentApiService);
+  private readonly classApi = inject(ClassApiService);
+  private readonly subjectApi = inject(SubjectApiService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
 
@@ -43,10 +57,23 @@ export class AssignmentsListComponent implements OnInit {
   protected readonly hasPreviousPage = signal(false);
   protected readonly hasNextPage = signal(false);
 
-  protected readonly columns: readonly TableColumn<Assignment>[] = [
+  protected readonly classMap = signal<Record<string, string>>({});
+  protected readonly subjectMap = signal<Record<string, string>>({});
+
+  protected readonly displayAssignments = computed(() =>
+    this.assignments().map((assignment) => ({
+      ...assignment,
+      subjectName: this.subjectMap()[assignment.subjectId] ?? 'Unknown subject',
+      className: this.classMap()[assignment.classId] ?? 'Unknown class',
+    })),
+  );
+
+  protected readonly columns: readonly TableColumn<
+    Assignment & { subjectName: string; className: string }
+  >[] = [
     { key: 'title', label: 'Title' },
-    { key: 'subjectId', label: 'Subject ID' },
-    { key: 'classId', label: 'Class ID' },
+    { key: 'subjectName', label: 'Subject' },
+    { key: 'className', label: 'Class' },
     { key: 'deadline', label: 'Deadline' },
     { key: 'maxMarks', label: 'Max Marks' },
     { key: 'status', label: 'Status' },
@@ -69,12 +96,55 @@ export class AssignmentsListComponent implements OnInit {
         this.totalPages.set(response.totalPages);
         this.hasPreviousPage.set(response.hasPreviousPage);
         this.hasNextPage.set(response.hasNextPage);
+        this.loadReferenceData(response.items);
         this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
         this.error.set('Failed to load assignments. Please try again.');
         this.toast.error('Failed to load assignments. Please try again.');
+      },
+    });
+  }
+
+  private loadReferenceData(assignments: Assignment[]): void {
+    const classIds = [...new Set(assignments.map((assignment) => assignment.classId))];
+
+    if (classIds.length === 0) {
+      this.classMap.set({});
+      this.subjectMap.set({});
+      return;
+    }
+
+    forkJoin({
+      classes: this.classApi.getClasses(),
+      subjectGroups: forkJoin(
+        classIds.map((classId) => this.subjectApi.getSubjectsByClass(classId)),
+      ),
+    }).subscribe({
+      next: ({
+        classes,
+        subjectGroups,
+      }: {
+        classes: ClassDto[];
+        subjectGroups: SubjectDto[][];
+      }) => {
+        const classLookup: Record<string, string> = {};
+        classes.forEach((schoolClass) => {
+          classLookup[schoolClass.id] = schoolClass.name;
+        });
+
+        const subjectLookup: Record<string, string> = {};
+        subjectGroups.flat().forEach((subject) => {
+          subjectLookup[subject.id] = subject.name;
+        });
+
+        this.classMap.set(classLookup);
+        this.subjectMap.set(subjectLookup);
+      },
+      error: () => {
+        this.classMap.set({});
+        this.subjectMap.set({});
       },
     });
   }

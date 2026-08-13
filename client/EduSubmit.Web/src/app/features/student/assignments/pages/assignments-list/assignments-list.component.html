@@ -4,6 +4,11 @@
       <span class="eyebrow">Student · Assignments</span>
       <h1 class="page__title">Your assignments</h1>
     </div>
+
+    <div class="page__meta">
+      <span class="material-icons">schedule</span>
+      {{ totalCount() }} total items
+    </div>
   </header>
 
   <app-loading [visible]="loading()" message="Loading assignments..." />
@@ -14,7 +19,7 @@
         @for (row of rows(); track row.id) {
           <article class="assignment-card card" (click)="openAssignment(row.id)">
             <div class="assignment-card__meta">
-              <span class="eyebrow">{{ row.subjectName }} · {{ row.className }}</span>
+              <span class="eyebrow eyebrow--card">{{ row.subjectName }} · {{ row.className }}</span>
               <span class="badge" [class.badge--success]="row.status === 'Published'">
                 {{ row.status }}
               </span>
@@ -23,7 +28,11 @@
             <h2 class="assignment-card__title">{{ row.title }}</h2>
 
             <div class="assignment-card__footer">
-              <span class="badge" [class.badge--warning]="!row.deadlinePassed" [class.badge--muted]="row.deadlinePassed">
+              <span
+                class="badge"
+                [class.badge--warning]="!row.deadlinePassed"
+                [class.badge--muted]="row.deadlinePassed"
+              >
                 {{ row.deadlinePassed ? 'Deadline passed' : 'Due ' + row.deadlineLabel }}
               </span>
               <span class="assignment-card__marks">{{ row.maxMarks }} marks</span>
