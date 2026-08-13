@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="EduSubmit book icon">
+  <defs>
+    <linearGradient id="book-bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#1f2937"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="26" fill="url(#book-bg)"/>
+
+  <path d="M30 38c0-8.8 7.2-16 16-16h28c8.6 0 15.6 7 15.6 15.6v40.8c0 8.4-6.8 15.2-15.2 15.2H46c-8.8 0-16-7.2-16-16V38Z" fill="#f8fafc" opacity="0.12"/>
+
+  <path d="M36 40c0-4.4 3.6-8 8-8h24c8.8 0 16 7.2 16 16v38c0 4.4-3.6 8-8 8H44c-4.4 0-8-3.6-8-8V40Z" fill="#ffffff" opacity="0.95"/>
+
+  <path d="M52 42h18c4.4 0 8 3.6 8 8v26c0 6.7-5.3 12-12 12H52V42Z" fill="#dbeafe"/>
+  <path d="M44 42h28c6.6 0 12 5.4 12 12v26c0 6.6-5.4 12-12 12H44V42Z" fill="#f8fafc"/>
+
+  <path d="M45 52h27M45 65h27M45 78h18" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+
+  <path d="M62 44v39" stroke="#2563eb" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+
+  <path d="M82 92c0-4.4-3.6-8-8-8H52c-4.4 0-8 3.6-8 8v6h38v-6Z" fill="#1d4ed8" opacity="0.9"/>
+</svg>
