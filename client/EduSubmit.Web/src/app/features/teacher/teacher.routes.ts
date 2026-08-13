@@ -17,4 +17,10 @@ export const TEACHER_ROUTES: Routes = [
     loadChildren: () =>
       import('./assignments/assignments.routes').then((m) => m.ASSIGNMENTS_ROUTES),
   },
+  {
+    path: 'submissions',
+    canActivate: [authGuard, roleGuard('Teacher')],
+    loadChildren: () =>
+      import('./submissions/submissions.routes').then((m) => m.TEACHER_SUBMISSIONS_ROUTES),
+  },
 ];

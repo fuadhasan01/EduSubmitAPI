@@ -1,0 +1,185 @@
+@if (loading()) {
+  <app-loading></app-loading>
+} @else if (submission(); as item) {
+  <section class="detail-page">
+    <header class="detail-header">
+      <div>
+        <button type="button" class="back-button" (click)="goBack()">
+          ← Back to submissions
+        </button>
+
+        <div class="title-row">
+          <div>
+            <span class="eyebrow">Submission Review</span>
+            <h1>Student Submission</h1>
+          </div>
+
+          <app-badge
+            [text]="item.status"
+            [variant]="statusVariant(item.status)"
+          ></app-badge>
+        </div>
+      </div>
+    </header>
+
+    <div class="detail-grid">
+      <main class="content-column">
+        <section class="detail-card">
+          <div class="card-heading">
+            <div>
+              <span class="section-label">Submission Content</span>
+              <h2>Student Response</h2>
+            </div>
+          </div>
+
+          <div class="submission-content">
+            {{ item.content }}
+          </div>
+
+          @if (item.fileUrl) {
+            <div class="attachment">
+              <span>Attachment</span>
+              <a [href]="item.fileUrl" target="_blank" rel="noopener noreferrer">
+                Open submitted file ↗
+              </a>
+            </div>
+          }
+        </section>
+
+        @if (item.feedback) {
+          <section class="detail-card feedback-card">
+            <span class="section-label">Feedback</span>
+            <h2>Teacher Feedback</h2>
+            <p>{{ item.feedback }}</p>
+          </section>
+        }
+      </main>
+
+      <aside class="side-column">
+        <section class="detail-card">
+          <span class="section-label">Student</span>
+
+          <div class="identity">
+            <div class="identity-avatar">
+              {{ item.studentId.substring(0, 1).toUpperCase() }}
+            </div>
+
+            <div>
+              <strong>Student</strong>
+              <span>{{ item.studentId }}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-card">
+          <span class="section-label">Submission Information</span>
+
+          <div class="info-list">
+            <div>
+              <span>Submitted</span>
+              <strong>{{ item.submittedAt | date: 'MMM d, y, h:mm a' }}</strong>
+            </div>
+
+            @if (item.gradedAt) {
+              <div>
+                <span>Graded</span>
+                <strong>{{ item.gradedAt | date: 'MMM d, y, h:mm a' }}</strong>
+              </div>
+            }
+
+            <div>
+              <span>Marks</span>
+
+              @if (item.marks !== null) {
+                <strong class="marks">{{ item.marks }}</strong>
+              } @else {
+                <strong class="muted">Not graded</strong>
+              }
+            </div>
+          </div>
+        </section>
+
+        @if (canGrade() || canReturnForRevision()) {
+          <section class="action-card">
+            <span class="section-label">Teacher Actions</span>
+
+            @if (canGrade()) {
+              <app-button (click)="openGradeModal()">Grade Submission</app-button>
+            }
+
+            @if (canReturnForRevision()) {
+              <button
+                type="button"
+                class="return-button"
+                (click)="openReturnConfirmation()"
+              >
+                Return for Revision
+              </button>
+            }
+          </section>
+        }
+      </aside>
+    </div>
+  </section>
+
+  <app-grade-submission-modal
+    [open]="gradeModalOpen()"
+    [submitting]="grading()"
+    [maxMarks]="null"
+    [serverError]="gradeError()"
+    (submitted)="gradeSubmission($event)"
+    (cancelled)="closeGradeModal()"
+  ></app-grade-submission-modal>
+
+  <app-modal [open]="returnModalOpen()" (closed)="closeReturnConfirmation()">
+    <div class="return-modal">
+      <span class="section-label">Revision Request</span>
+      <h2>Return submission?</h2>
+
+      <p>
+        The submission will be returned to the student for revision. Provide feedback explaining
+        what needs to be improved.
+      </p>
+
+      @if (returnError()) {
+        <div class="server-error">
+          {{ returnError() }}
+        </div>
+      }
+
+      <label for="return-feedback">Feedback</label>
+
+      <textarea
+        id="return-feedback"
+        rows="6"
+        [value]="returnFeedback()"
+        (input)="updateReturnFeedback($event)"
+        placeholder="Explain what the student should revise..."
+      ></textarea>
+
+      <div class="return-actions">
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="closeReturnConfirmation()"
+          [disabled]="returning()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="danger-button"
+          (click)="returnForRevision()"
+          [disabled]="returning()"
+        >
+          @if (returning()) {
+            Returning...
+          } @else {
+            Return for Revision
+          }
+        </button>
+      </div>
+    </div>
+  </app-modal>
+}

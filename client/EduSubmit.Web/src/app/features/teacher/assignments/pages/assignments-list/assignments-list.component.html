@@ -5,9 +5,7 @@
       <p>Manage assignments created by you.</p>
     </div>
 
-    <app-button type="button" (clicked)="createAssignment()">
-      Create Assignment
-    </app-button>
+  <app-button type="button" label="Create Assignment" (clicked)="createAssignment()"></app-button>
   </header>
 
   @if (loading()) {
@@ -16,8 +14,7 @@
     <div class="error-state">
       <p>{{ error() }}</p>
 
-      <app-button type="button" (clicked)="retry()">
-        Retry
+      <app-button type="button" label="Retry" (clicked)="retry()">
       </app-button>
     </div>
   } @else if (assignments().length === 0) {

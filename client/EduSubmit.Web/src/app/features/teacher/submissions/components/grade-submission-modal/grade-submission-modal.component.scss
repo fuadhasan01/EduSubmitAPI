@@ -1,0 +1,87 @@
+.grade-modal {
+  min-width: min(520px, 90vw);
+}
+
+.grade-modal__header {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+p {
+  margin: 8px 0 0;
+  opacity: 0.7;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d8dce5;
+  border-radius: 8px;
+  padding: 11px 13px;
+  font: inherit;
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+small {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+.field-error,
+.server-error {
+  margin-top: 7px;
+  color: #c62828;
+  font-size: 13px;
+}
+
+.server-error {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fff1f1;
+}
+
+.grade-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.secondary-button {
+  border: 1px solid #d8dce5;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: transparent;
+  cursor: pointer;
+}

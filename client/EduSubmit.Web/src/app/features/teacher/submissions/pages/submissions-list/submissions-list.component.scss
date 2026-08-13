@@ -1,0 +1,159 @@
+.submissions-page {
+  padding: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  opacity: 0.65;
+}
+
+.submission-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: #f5f7fb;
+}
+
+.submission-count strong {
+  font-size: 24px;
+}
+
+.submission-count span {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.submission-list {
+  display: grid;
+  gap: 14px;
+}
+
+.submission-card {
+  padding: 20px;
+  border: 1px solid #e3e7ef;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.submission-card:hover {
+  transform: translateY(-2px);
+  border-color: #cfd5e2;
+  box-shadow: 0 8px 24px rgba(20, 30, 50, 0.07);
+}
+
+.submission-card__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.submission-card__student {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.submission-card h3 {
+  margin: 0 0 3px;
+  font-size: 15px;
+}
+
+.submission-card__student span {
+  font-size: 13px;
+  opacity: 0.55;
+}
+
+.submission-card__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 20px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #edf0f5;
+}
+
+.meta-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+}
+
+.submission-card__meta strong {
+  font-size: 14px;
+}
+
+.not-graded {
+  opacity: 0.5;
+}
+
+.view-action {
+  justify-self: end;
+}
+
+@media (max-width: 700px) {
+  .submissions-page {
+    padding: 18px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .submission-card__meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .view-action {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

@@ -11,8 +11,7 @@
     <div class="error-state">
       <p>{{ error() }}</p>
 
-      <app-button type="button" (clicked)="retry()">
-        Retry
+      <app-button type="button" label="Retry" (clicked)="retry()">
       </app-button>
     </div>
   } @else if (assignment(); as item) {
@@ -30,20 +29,20 @@
         <div class="assignment-actions">
           <app-button
             type="button"
+            label="Edit"
             variant="secondary"
             [disabled]="actionLoading()"
             (clicked)="edit()"
           >
-            Edit
           </app-button>
 
           @if (item.status === 'Draft') {
             <app-button
               type="button"
+              label="Publish"
               [disabled]="actionLoading()"
               (clicked)="publish()"
             >
-              Publish
             </app-button>
           }
 
@@ -51,21 +50,20 @@
             <app-button
               type="button"
               variant="secondary"
+              label="Unpublish"
               [disabled]="actionLoading()"
               (clicked)="unpublish()"
             >
-              Unpublish
             </app-button>
           }
 
           <app-button
             type="button"
             variant="danger"
+            label="Delete"
             [disabled]="actionLoading()"
             (clicked)="deleteAssignment()"
-          >
-            Delete
-          </app-button>
+          ></app-button>
         </div>
       </header>
 

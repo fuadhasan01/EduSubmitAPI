@@ -93,18 +93,14 @@
   <div class="form-actions">
     <app-button
       type="button"
+      label="Cancel"
       variant="secondary"
       [disabled]="submitting()"
       (clicked)="cancel()"
     >
-      Cancel
     </app-button>
 
-    <app-button
-      type="submit"
-      [disabled]="submitting()"
-    >
-      {{ submitting() ? 'Saving...' : mode() === 'create' ? 'Create Assignment' : 'Save Changes' }}
-    </app-button>
+    <app-button type="submit" [disabled]="submitting()" [loading]="submitting()" loadingLabel="Saving..."
+      [label]="mode() === 'create' ? 'Create Assignment' : 'Save Changes'"></app-button>
   </div>
 </form>

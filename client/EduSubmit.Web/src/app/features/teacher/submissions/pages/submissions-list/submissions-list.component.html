@@ -1,0 +1,78 @@
+<section class="submissions-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Teacher Workspace</span>
+      <h1>Submissions</h1>
+      <p>Review and evaluate student submissions for this assignment.</p>
+    </div>
+
+    <div class="submission-count">
+      <strong>{{ totalCount() }}</strong>
+      <span>submissions</span>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <app-loading></app-loading>
+  } @else if (submissions().length === 0) {
+    <app-empty-state
+      title="No submissions yet"
+      message="Students have not submitted this assignment yet."
+    ></app-empty-state>
+  } @else {
+    <div class="submission-list">
+      @for (submission of submissions(); track submission.id) {
+        <article class="submission-card" (click)="openSubmission(submission)">
+          <div class="submission-card__main">
+            <div class="submission-card__student">
+              <div class="student-avatar">
+                {{ submission.studentId.substring(0, 1).toUpperCase() }}
+              </div>
+
+              <div>
+                <h3>Student</h3>
+                <span>{{ submission.studentId }}</span>
+              </div>
+            </div>
+
+            <div class="submission-card__status">
+              <app-badge
+                [text]="submission.status"
+                [variant]="statusVariant(submission.status)"
+              ></app-badge>
+            </div>
+          </div>
+
+          <div class="submission-card__meta">
+            <div>
+              <span class="meta-label">Submitted</span>
+              <strong>{{ submission.submittedAt | date: 'MMM d, y, h:mm a' }}</strong>
+            </div>
+
+            <div>
+              <span class="meta-label">Marks</span>
+
+              @if (submission.marks !== null) {
+                <strong>{{ submission.marks }}</strong>
+              } @else {
+                <strong class="not-graded">Not graded</strong>
+              }
+            </div>
+
+            <div class="view-action">
+              <app-button>View Submission</app-button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    <app-pagination
+      [currentPage]="pageNumber()"
+      [totalPages]="totalPages()"
+      [hasPreviousPage]="hasPreviousPage()"
+      [hasNextPage]="hasNextPage()"
+      (pageChanged)="changePage($event)"
+    ></app-pagination>
+  }
+</section>
