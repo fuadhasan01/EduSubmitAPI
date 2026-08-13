@@ -21,30 +21,235 @@ public static class DbSeeder
 
         var passwordHasher = new BCryptPasswordHasher();
 
-        var adminEmail = Email.Create("admin@edusubmit.com").ValueOrThrow();
-        var teacherEmail = Email.Create("teacher@edusubmit.com").ValueOrThrow();
-        var studentEmail = Email.Create("student@edusubmit.com").ValueOrThrow();
-
-        var admin = User.Create(
+        var admin = CreateUser(
             "System Admin",
-            adminEmail,
-            passwordHasher.Hash("Admin@123"),
-            EnumUserRole.Admin).ValueOrThrow();
+            "admin@edusubmit.com",
+            "Admin@123",
+            EnumUserRole.Admin,
+            passwordHasher);
 
-        var teacher = User.Create(
-            "John Teacher",
-            teacherEmail,
-            passwordHasher.Hash("Teacher@123"),
-            EnumUserRole.Teacher).ValueOrThrow();
+        var teachers = new[]
+        {
+            CreateUser("Mr. Daniel Carter", "daniel.carter@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
+            CreateUser("Ms. Priya Shah", "priya.shah@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
+            CreateUser("Mr. Ahmed Rahman", "ahmed.rahman@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
+            CreateUser("Mrs. Emma Ross", "emma.ross@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher)
+        };
 
-        var student = User.Create(
-            "Jane Student",
-            studentEmail,
-            passwordHasher.Hash("Student@123"),
-            EnumUserRole.Student).ValueOrThrow();
+        var students = new[]
+        {
+            CreateUser("Alice Johnson", "alice.johnson@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Benjamin Lee", "benjamin.lee@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Chloe Martinez", "chloe.martinez@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Daniel Kim", "daniel.kim@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Ella Thompson", "ella.thompson@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Farhan Ali", "farhan.ali@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Grace Wilson", "grace.wilson@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Henry Patel", "henry.patel@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Isabella Nguyen", "isabella.nguyen@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Jack Walker", "jack.walker@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Kylie Brown", "kylie.brown@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Lucas Green", "lucas.green@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher)
+        };
 
-        context.Users.AddRange(admin, teacher, student);
+        context.Users.AddRange(admin);
+        context.Users.AddRange(teachers);
+        context.Users.AddRange(students);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var classes = new[]
+        {
+            Class.Create("Grade 7A").ValueOrThrow(),
+            Class.Create("Grade 8B").ValueOrThrow(),
+            Class.Create("Grade 9C").ValueOrThrow(),
+            Class.Create("Grade 10A").ValueOrThrow()
+        };
+
+        context.Classes.AddRange(classes);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var classSubjects = new Dictionary<Guid, List<Subject>>();
+        var subjectCatalog = new[]
+        {
+            "Mathematics",
+            "Science",
+            "English",
+            "History",
+            "Computer Science",
+            "Art"
+        };
+
+        foreach (var schoolClass in classes)
+        {
+            var subjectList = new List<Subject>();
+
+            foreach (var subjectName in subjectCatalog.Take(4))
+            {
+                subjectList.Add(
+                    Subject.Create(subjectName, schoolClass.Id).ValueOrThrow());
+            }
+
+            context.Subjects.AddRange(subjectList);
+            classSubjects[schoolClass.Id] = subjectList;
+        }
 
         await context.SaveChangesAsync(cancellationToken);
+
+        var teacherSubjectAssignments = new List<TeacherSubjectAssignment>();
+        var teacherForSubject = new Dictionary<Guid, Guid>();
+        var teacherIndex = 0;
+
+        foreach (var schoolClass in classes)
+        {
+            foreach (var subject in classSubjects[schoolClass.Id])
+            {
+                var assignedTeacher = teachers[teacherIndex % teachers.Length];
+                teacherIndex++;
+
+                var assignment = TeacherSubjectAssignment.Create(
+                    assignedTeacher.Id,
+                    subject.Id).ValueOrThrow();
+
+                teacherSubjectAssignments.Add(assignment);
+                teacherForSubject[subject.Id] = assignedTeacher.Id;
+            }
+        }
+
+        context.TeacherSubjectAssignments.AddRange(teacherSubjectAssignments);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var studentClassEnrollments = new List<StudentClassEnrollment>();
+
+        for (var classIndex = 0; classIndex < classes.Length; classIndex++)
+        {
+            var schoolClass = classes[classIndex];
+            var classStudents = students
+                .Skip(classIndex * 3)
+                .Take(6)
+                .ToList();
+
+            foreach (var student in classStudents)
+            {
+                studentClassEnrollments.Add(
+                    StudentClassEnrollment.Create(student.Id, schoolClass.Id).ValueOrThrow());
+            }
+        }
+
+        context.StudentClassEnrollments.AddRange(studentClassEnrollments);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var assignments = new List<Assignment>();
+        var assignmentCounter = 0;
+
+        foreach (var schoolClass in classes)
+        {
+            foreach (var subject in classSubjects[schoolClass.Id])
+            {
+                var teacherId = teacherForSubject[subject.Id];
+                var assignmentDateOffset = assignmentCounter % 4;
+                var deadline = DateTime.UtcNow.AddDays(3 + assignmentDateOffset).AddHours(5);
+
+                var assignment = Assignment.Create(
+                    $"{subject.Name} Unit {assignmentCounter + 1}",
+                    $"Complete the tasks for the {subject.Name} unit and submit your work before the deadline. Include examples, reasoning, and final answers.",
+                    subject.Id,
+                    schoolClass.Id,
+                    teacherId,
+                    deadline,
+                    100m + (assignmentCounter * 5m)).ValueOrThrow();
+
+                if (assignmentCounter % 3 == 0)
+                {
+                    assignment.Publish();
+                }
+
+                assignments.Add(assignment);
+                assignmentCounter++;
+            }
+        }
+
+        context.Assignments.AddRange(assignments);
+        await context.SaveChangesAsync(cancellationToken);
+
+        var submissions = new List<Submission>();
+
+        foreach (var assignment in assignments)
+        {
+            var enrolledStudents = studentClassEnrollments
+                .Where(e => e.ClassId == assignment.ClassId)
+                .Select(e => e.StudentId)
+                .ToList();
+
+            if (enrolledStudents.Count == 0)
+            {
+                continue;
+            }
+
+            var submissionTargets = enrolledStudents
+                .OrderBy(studentId => studentId)
+                .Take(Math.Min(3, enrolledStudents.Count))
+                .ToList();
+
+            foreach (var studentId in submissionTargets)
+            {
+                var studentSubmission = Submission.Create(
+                    assignment.Id,
+                    studentId,
+                    $"I completed the {assignment.Title} activity and included my reasoning and final answer summary.",
+                    null,
+                    assignment.Deadline.AddDays(-1)).ValueOrThrow();
+
+                if (assignment.Status == EnumAssignmentStatus.Published && studentId != submissionTargets.First())
+                {
+                    var gradeMark = (assignment.MaxMarks * 0.85m) + (studentId.GetHashCode() % 10);
+                    studentSubmission.Grade(gradeMark, "Good work. Please improve the explanation for one section.", assignment.MaxMarks);
+                }
+                else if (assignment.Status == EnumAssignmentStatus.Draft)
+                {
+                    studentSubmission.ReturnForRevision("Please add more evidence and clarify your final conclusion.");
+                }
+                else
+                {
+                    studentSubmission.ReturnForRevision("Your answer is close, but needs clearer steps and stronger evidence.");
+                }
+
+                submissions.Add(studentSubmission);
+            }
+
+            var nonSubmittedStudent = enrolledStudents
+                .Except(submissionTargets)
+                .FirstOrDefault();
+
+            if (nonSubmittedStudent != Guid.Empty)
+            {
+                var draftSubmission = Submission.Create(
+                    assignment.Id,
+                    nonSubmittedStudent,
+                    "I am still working on this assignment and plan to submit it soon.",
+                    null,
+                    assignment.Deadline.AddDays(2)).ValueOrThrow();
+
+                submissions.Add(draftSubmission);
+            }
+        }
+
+        context.Submissions.AddRange(submissions);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private static User CreateUser(
+        string fullName,
+        string email,
+        string password,
+        EnumUserRole role,
+        BCryptPasswordHasher passwordHasher)
+    {
+        var emailValue = Email.Create(email).ValueOrThrow();
+
+        return User.Create(
+            fullName,
+            emailValue,
+            passwordHasher.Hash(password),
+            role).ValueOrThrow();
     }
 }
