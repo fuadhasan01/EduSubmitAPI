@@ -1,0 +1,58 @@
+<div class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Student · Assignments</span>
+      <h1 class="page__title">Your assignments</h1>
+    </div>
+  </header>
+
+  <app-loading [visible]="loading()" message="Loading assignments..." />
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <div class="assignments-grid">
+        @for (row of rows(); track row.id) {
+          <article class="assignment-card card" (click)="openAssignment(row.id)">
+            <div class="assignment-card__meta">
+              <span class="eyebrow">{{ row.subjectName }} · {{ row.className }}</span>
+              <span class="badge" [class.badge--success]="row.status === 'Published'">
+                {{ row.status }}
+              </span>
+            </div>
+
+            <h2 class="assignment-card__title">{{ row.title }}</h2>
+
+            <div class="assignment-card__footer">
+              <span class="badge" [class.badge--warning]="!row.deadlinePassed" [class.badge--muted]="row.deadlinePassed">
+                {{ row.deadlinePassed ? 'Deadline passed' : 'Due ' + row.deadlineLabel }}
+              </span>
+              <span class="assignment-card__marks">{{ row.maxMarks }} marks</span>
+            </div>
+          </article>
+        }
+      </div>
+
+      <nav class="pagination" aria-label="Pagination">
+        <app-button
+          label="Previous"
+          variant="secondary"
+          [disabled]="pageNumber() <= 1"
+          (clicked)="goToPage(pageNumber() - 1)"
+        />
+        <span>Page {{ pageNumber() }} of {{ totalPages() || 1 }} ({{ totalCount() }} total)</span>
+        <app-button
+          label="Next"
+          variant="secondary"
+          [disabled]="pageNumber() >= totalPages()"
+          (clicked)="goToPage(pageNumber() + 1)"
+        />
+      </nav>
+    } @else {
+      <app-empty-state
+        icon="📄"
+        title="No assignments yet"
+        message="Published assignments for your class will appear here."
+      />
+    }
+  }
+</div>

@@ -11,8 +11,6 @@ namespace EduSubmit.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-//teacher and admin can create, update, publish, unpublish and delete assignments
-[Authorize(Roles = "Teacher,Admin")]
 public sealed class AssignmentsController : ControllerBase
 {
     private readonly ISender _sender;
@@ -22,6 +20,7 @@ public sealed class AssignmentsController : ControllerBase
         _sender = sender;
     }
 
+    [Authorize(Roles = "Teacher,Admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -43,6 +42,7 @@ public sealed class AssignmentsController : ControllerBase
             new { id = result.Value });
     }
 
+    [Authorize(Roles = "Teacher,Admin")]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,6 +71,7 @@ public sealed class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Teacher,Admin")]
     [HttpPost("{id:guid}/publish")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,6 +92,7 @@ public sealed class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Teacher,Admin")]
     [HttpPost("{id:guid}/unpublish")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -111,6 +113,7 @@ public sealed class AssignmentsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Teacher,Admin")]
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

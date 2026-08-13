@@ -1,0 +1,40 @@
+<div class="page">
+  <app-loading [visible]="loading()" message="Loading assignment..." />
+
+  @if (!loading()) {
+    @if (notFound()) {
+      <app-empty-state
+        icon="🔍"
+        title="Assignment not found"
+        message="This assignment may have been unpublished or removed."
+        actionLabel="Back to assignments"
+        (action)="goBack()"
+      />
+    } @else if (assignment(); as a) {
+      <header class="page__header">
+        <div class="page__heading">
+          <span class="eyebrow">{{ subjectName() }} · {{ className() }}</span>
+          <h1 class="page__title">{{ a.title }}</h1>
+        </div>
+
+        <app-button label="Back to list" variant="secondary" (clicked)="goBack()" />
+      </header>
+
+      <section class="detail-card card">
+        <div class="detail-card__badges">
+          <span class="badge" [class.badge--success]="a.status === 'Published'">{{ a.status }}</span>
+          <span class="badge" [class.badge--warning]="!deadlinePassed()" [class.badge--muted]="deadlinePassed()">
+            {{ deadlinePassed() ? 'Deadline passed' : 'Due ' + deadlineLabel() }}
+          </span>
+          <span class="badge badge--muted">{{ a.maxMarks }} marks</span>
+        </div>
+
+        <p class="detail-card__description">{{ a.description }}</p>
+
+        <div class="detail-card__actions">
+          <app-button label="Go to submission" variant="primary" (clicked)="goToSubmission()" />
+        </div>
+      </section>
+    }
+  }
+</div>
