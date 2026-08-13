@@ -1,0 +1,31 @@
+<div class="page">
+  <app-loading [visible]="loading()" message="Loading assignment..." />
+
+  @if (!loading()) {
+    @if (deadlinePassed()) {
+      <app-empty-state
+        icon="⏰"
+        title="Deadline has passed"
+        message="This assignment's deadline has passed and no longer accepts new submissions."
+      />
+    } @else if (assignment(); as a) {
+      <header class="page__header">
+        <div class="page__heading">
+          <span class="eyebrow">Submitting for</span>
+          <h1 class="page__title">{{ a.title }}</h1>
+        </div>
+      </header>
+
+      <section class="card submission-create__card">
+        <app-submission-form
+          submitLabel="Submit"
+          submittingLabel="Submitting..."
+          [submitting]="submitting()"
+          [serverError]="submitError()"
+          (submitted)="createSubmission($event)"
+          (cancelled)="cancel()"
+        />
+      </section>
+    }
+  }
+</div>

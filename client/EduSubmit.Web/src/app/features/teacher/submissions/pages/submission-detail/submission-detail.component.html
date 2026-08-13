@@ -104,7 +104,7 @@
             <span class="section-label">Teacher Actions</span>
 
             @if (canGrade()) {
-              <app-button (click)="openGradeModal()">Grade Submission</app-button>
+              <app-button label="Grade Submission" (click)="openGradeModal()"></app-button>
             }
 
             @if (canReturnForRevision()) {

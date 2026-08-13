@@ -1,0 +1,92 @@
+<div class="page">
+  <app-loading [visible]="loading()" message="Loading submission..." />
+
+  @if (!loading()) {
+    @if (notFound()) {
+      <app-empty-state
+        icon="🔍"
+        title="Submission not found"
+        message="This submission may not exist or you may not have access to it."
+        actionLabel="Back to submissions"
+        (action)="goToList()"
+      />
+    } @else if (submission(); as s) {
+      <header class="page__header">
+        <div class="page__heading">
+          <span class="eyebrow">{{ assignment()?.title ?? 'Assignment' }}</span>
+          <h1 class="page__title">Your submission</h1>
+        </div>
+
+        <app-button label="Back to list" variant="secondary" (clicked)="goToList()" />
+      </header>
+
+      <section class="detail-card card">
+        <div class="detail-card__badges">
+          <span class="badge"
+            [class.badge--success]="s.status === 'Graded'"
+            [class.badge--warning]="s.status === 'Late' || s.status === 'ReturnedForRevision'"
+            [class.badge--muted]="s.status === 'Submitted'"
+          >{{ s.status }}</span>
+
+          @if (canEdit()) {
+            <span class="badge badge--warning">Editable until deadline</span>
+          } @else {
+            <span class="badge badge--muted">Editing closed</span>
+          }
+        </div>
+
+        @if (!editing()) {
+          <div class="detail-card__body">
+            <div class="detail-card__field">
+              <span class="detail-card__label">Your answer</span>
+              <p class="detail-card__text">{{ s.content }}</p>
+            </div>
+
+            @if (s.fileUrl) {
+              <div class="detail-card__field">
+                <span class="detail-card__label">Attached file</span>
+                <a [href]="s.fileUrl" target="_blank" rel="noopener" class="detail-card__link">{{ s.fileUrl }}</a>
+              </div>
+            }
+
+            <div class="detail-card__field">
+              <span class="detail-card__label">Submitted</span>
+              <p class="detail-card__text">{{ s.submittedAt | date: 'medium' }}</p>
+            </div>
+
+            @if (s.marks !== null) {
+              <div class="detail-card__field">
+                <span class="detail-card__label">Marks</span>
+                <p class="detail-card__text">{{ s.marks }} / {{ assignment()?.maxMarks ?? '—' }}</p>
+              </div>
+            }
+
+            @if (s.feedback) {
+              <div class="detail-card__field">
+                <span class="detail-card__label">Feedback</span>
+                <p class="detail-card__text">{{ s.feedback }}</p>
+              </div>
+            }
+          </div>
+
+          @if (canEdit()) {
+            <div class="detail-card__actions">
+              <app-button label="Edit submission" variant="primary" (clicked)="startEditing()" />
+            </div>
+          }
+        } @else {
+          <app-submission-form
+            [initialContent]="s.content"
+            [initialFileUrl]="s.fileUrl ?? ''"
+            submitLabel="Save changes"
+            submittingLabel="Saving..."
+            [submitting]="saving()"
+            [serverError]="saveError()"
+            (submitted)="saveEdit($event)"
+            (cancelled)="cancelEditing()"
+          />
+        }
+      </section>
+    }
+  }
+</div>

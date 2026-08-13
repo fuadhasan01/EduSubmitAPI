@@ -1,0 +1,47 @@
+<form class="submission-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label class="field">
+    <span>Your answer</span>
+    <textarea
+      class="field__control submission-form__textarea"
+      formControlName="content"
+      rows="6"
+      placeholder="Write your submission here..."
+      [attr.aria-invalid]="form.controls.content.touched && form.controls.content.invalid"
+    ></textarea>
+    @if (form.controls.content.touched && form.controls.content.hasError('required')) {
+      <small class="field__error">This field is required.</small>
+    }
+    @if (form.controls.content.touched && form.controls.content.hasError('minlength')) {
+      <small class="field__error">Write at least 10 characters.</small>
+    }
+  </label>
+
+  <label class="field">
+    <span>File link (optional)</span>
+    <input
+      type="url"
+      class="field__control"
+      formControlName="fileUrl"
+      placeholder="https://..."
+      [attr.aria-invalid]="form.controls.fileUrl.touched && form.controls.fileUrl.invalid"
+    />
+    @if (form.controls.fileUrl.touched && form.controls.fileUrl.hasError('pattern')) {
+      <small class="field__error">Enter a valid URL starting with http:// or https://.</small>
+    }
+  </label>
+
+  @if (serverError()) {
+    <p class="field__error field__error--banner" role="alert">{{ serverError() }}</p>
+  }
+
+  <div class="submission-form__actions">
+    <app-button type="button" label="Cancel" variant="secondary" (clicked)="cancelled.emit()" />
+    <app-button
+      type="submit"
+      [label]="submitLabel()"
+      [loadingLabel]="submittingLabel()"
+      variant="primary"
+      [loading]="submitting()"
+    />
+  </div>
+</form>

@@ -1,0 +1,59 @@
+<div class="page">
+  <header class="page__header">
+    <div class="page__heading">
+      <span class="eyebrow">Student · Submissions</span>
+      <h1 class="page__title">My submissions</h1>
+    </div>
+  </header>
+
+  <app-loading [visible]="loading()" message="Loading your submissions..." />
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <div class="submissions-grid">
+        @for (row of rows(); track row.id) {
+          <article class="submission-card card" (click)="openSubmission(row.id)">
+            <div class="submission-card__meta">
+              <span class="badge"
+                [class.badge--success]="row.status === 'Graded'"
+                [class.badge--warning]="row.status === 'Late' || row.status === 'ReturnedForRevision'"
+                [class.badge--muted]="row.status === 'Submitted'"
+              >{{ row.status }}</span>
+              <span class="submission-card__date">{{ row.submittedAt }}</span>
+            </div>
+
+            <h2 class="submission-card__title">{{ row.assignmentTitle }}</h2>
+
+            @if (row.marks !== null) {
+              <span class="submission-card__marks">{{ row.marks }} / {{ row.maxMarks ?? '—' }}</span>
+            } @else {
+              <span class="submission-card__marks submission-card__marks--pending">Not graded yet</span>
+            }
+          </article>
+        }
+      </div>
+
+      <nav class="pagination" aria-label="Pagination">
+        <app-button
+          label="Previous"
+          variant="secondary"
+          [disabled]="pageNumber() <= 1"
+          (clicked)="goToPage(pageNumber() - 1)"
+        />
+        <span>Page {{ pageNumber() }} of {{ totalPages() || 1 }} ({{ totalCount() }} total)</span>
+        <app-button
+          label="Next"
+          variant="secondary"
+          [disabled]="pageNumber() >= totalPages()"
+          (clicked)="goToPage(pageNumber() + 1)"
+        />
+      </nav>
+    } @else {
+      <app-empty-state
+        icon="📝"
+        title="No submissions yet"
+        message="Submit your work from an assignment's detail page to see it here."
+      />
+    }
+  }
+</div>

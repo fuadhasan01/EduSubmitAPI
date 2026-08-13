@@ -1,0 +1,16 @@
+.submission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+
+  &__textarea {
+    resize: vertical;
+    font-family: var(--font-body);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
