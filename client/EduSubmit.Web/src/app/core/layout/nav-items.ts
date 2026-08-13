@@ -8,7 +8,7 @@ export function getAdminNavItems(): NavItem[] {
     { label: 'Subjects', icon: 'subject', route: '/admin/subjects' },
     { label: 'Relationships', icon: 'link', route: '/admin/relationships' },
     { label: 'Assignments', icon: 'assignment', route: '/admin/assignments' },
-    { label: 'Submissions', icon: 'submission', route: '/admin/submissions' },
+    { label: 'Submissions', icon: 'assignment_turned_in', route: '/admin/submissions' },
   ];
 }
 

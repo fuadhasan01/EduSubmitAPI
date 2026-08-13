@@ -34,13 +34,13 @@ import { NavItem } from './navigation.types';
       .layout-body {
         display: flex;
         flex: 1;
-        margin-top: 64px; /* header height */
+        padding-top: 64px; /* header height */
       }
 
       .main-content {
         flex: 1;
-        padding: 1.5rem;
-        background: #fafafa;
+        padding: 2rem;
+        background: #f8f9fc;
         margin-left: 240px; /* sidebar width */
         min-height: calc(100vh - 64px);
         transition: margin-left 0.3s ease;

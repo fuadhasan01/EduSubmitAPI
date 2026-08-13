@@ -80,7 +80,7 @@ export class RelationshipsComponent implements OnInit {
   private loadUsers(): void {
     this.usersLoading.set(true);
 
-    this.userApi.getUsers(1, 200).subscribe({
+    this.userApi.getUsers(1, 100).subscribe({
       next: (response) => {
         this.teachers.set(response.items.filter((u) => u.role === UserRole.Teacher && u.isActive));
         this.students.set(response.items.filter((u) => u.role === UserRole.Student && u.isActive));
@@ -128,7 +128,8 @@ export class RelationshipsComponent implements OnInit {
     }
 
     const { subjectId, teacherId } = this.assignForm.getRawValue();
-    const subjectName = this.assignSubjects().find((s) => s.id === subjectId)?.name ?? 'the subject';
+    const subjectName =
+      this.assignSubjects().find((s) => s.id === subjectId)?.name ?? 'the subject';
 
     this.assignSubmitting.set(true);
     this.assignError.set(null);

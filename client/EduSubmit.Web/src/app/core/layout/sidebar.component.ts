@@ -36,12 +36,19 @@ import { NavItem } from './navigation.types';
         left: 0;
         width: 240px;
         height: calc(100vh - 64px);
-        background: #f5f5f5;
-        border-right: 1px solid #e0e0e0;
-        padding: 1rem 0;
+        box-sizing: border-box;
+
+        background: #ffffff;
+        border-right: 1px solid #e9ecef;
+        padding: 1.25rem 0;
+
+        /* Don't create a scrollbar unless absolutely necessary */
         overflow-y: auto;
+        overflow-x: hidden;
+
         transition: transform 0.3s ease;
-        z-index: 100;
+        z-index: 101;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
       }
 
       .sidebar.open {
@@ -62,44 +69,75 @@ import { NavItem } from './navigation.types';
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.6rem 1rem;
-        border-radius: 8px;
-        color: #333;
+        padding: 0.65rem 1.25rem;
+        border-radius: 10px;
+        color: #4a4a4a;
         text-decoration: none;
         font-weight: 500;
-        transition:
-          background 0.2s,
-          color 0.2s;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        position: relative;
       }
 
       .nav-item a:hover {
-        background: #e8eaf6;
+        background: #f0f2f5;
         color: #1a237e;
       }
 
       .nav-item a.active {
+        background: #e8eaf6;
+        color: #1a237e;
+        font-weight: 600;
+      }
+
+      .nav-item a.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 20%;
+        height: 60%;
+        width: 4px;
         background: #1a237e;
-        color: #fff;
+        border-radius: 0 4px 4px 0;
       }
 
       .nav-item a .material-icons {
         font-size: 24px;
+        color: #6c757d;
+        transition: color 0.2s;
+      }
+      .nav-item a.active .material-icons {
+        color: #1a237e;
+      }
+      .nav-item a:hover .material-icons {
+        color: #1a237e;
       }
 
       .nav-label {
-        font-size: 0.95rem;
+        flex: 1;
       }
 
       @media (max-width: 768px) {
         .sidebar {
           transform: translateX(-100%);
-          width: 260px;
-          box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+          width: 280px;
+          box-shadow: 2px 0 16px rgba(0, 0, 0, 0.08);
         }
-
         .sidebar.open {
           transform: translateX(0);
         }
+      }
+
+      /* Scrollbar styling */
+      .sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 4px;
+      }
+      .sidebar::-webkit-scrollbar-track {
+        background: transparent;
       }
     `,
   ],
