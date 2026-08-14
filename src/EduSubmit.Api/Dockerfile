@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY . .
-RUN dotnet publish EduSubmitApi.Api/EduSubmitApi.Api.csproj -c Release -o /app
+RUN dotnet publish EduSubmit.Api.csproj -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
