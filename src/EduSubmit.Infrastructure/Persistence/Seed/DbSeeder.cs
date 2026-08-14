@@ -30,26 +30,26 @@ public static class DbSeeder
 
         var teachers = new[]
         {
-            CreateUser("Mr. Daniel Carter", "daniel.carter@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
-            CreateUser("Ms. Priya Shah", "priya.shah@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
-            CreateUser("Mr. Ahmed Rahman", "ahmed.rahman@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
-            CreateUser("Mrs. Emma Ross", "emma.ross@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher)
+            CreateUser("Md. Rakib Hasan", "rakib.hasan@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
+            CreateUser("Nusrat Jahan", "nusrat.jahan@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
+            CreateUser("Mohammad Saiful Islam", "saiful.islam@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher),
+            CreateUser("Farzana Akter", "farzana.akter@edusubmit.com", "Teacher@123", EnumUserRole.Teacher, passwordHasher)
         };
 
         var students = new[]
         {
-            CreateUser("Alice Johnson", "alice.johnson@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Benjamin Lee", "benjamin.lee@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Chloe Martinez", "chloe.martinez@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Daniel Kim", "daniel.kim@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Ella Thompson", "ella.thompson@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Farhan Ali", "farhan.ali@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Grace Wilson", "grace.wilson@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Henry Patel", "henry.patel@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Isabella Nguyen", "isabella.nguyen@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Jack Walker", "jack.walker@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Kylie Brown", "kylie.brown@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
-            CreateUser("Lucas Green", "lucas.green@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher)
+            CreateUser("Arafat Hossain", "arafat.hossain@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Sumaiya Rahman", "sumaiya.rahman@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Tanvir Ahmed", "tanvir.ahmed@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Nusrat Tasnim", "nusrat.tasnim@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Sakib Hasan", "sakib.hasan@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Mim Akter", "mim.akter@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Fahim Rahman", "fahim.rahman@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Jannatul Ferdous", "jannatul.ferdous@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Mehedi Hasan", "mehedi.hasan@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Tanjim Ahmed", "tanjim.ahmed@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Sadman Islam", "sadman.islam@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher),
+            CreateUser("Raisa Karim", "raisa.karim@edusubmit.com", "Student@123", EnumUserRole.Student, passwordHasher)
         };
 
         context.Users.AddRange(admin);
