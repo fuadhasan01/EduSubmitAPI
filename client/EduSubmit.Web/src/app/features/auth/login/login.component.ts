@@ -5,6 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthState } from '../../../core/auth/auth-state.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 
+interface DemoUser {
+  role: 'Admin' | 'Teacher' | 'Student';
+  name: string;
+  email: string;
+  password: string;
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -21,11 +28,47 @@ export class LoginComponent {
 
   protected readonly loading = signal(false);
   protected readonly serverError = signal<string | null>(null);
+  protected readonly showDemoPicker = signal(false);
+
+  protected readonly demoUsers: DemoUser[] = [
+    {
+      role: 'Admin',
+      name: 'System Admin',
+      email: 'admin@edusubmit.com',
+      password: 'Admin@123',
+    },
+    {
+      role: 'Teacher',
+      name: 'Md. Rakib Hasan',
+      email: 'rakib.hasan@edusubmit.com',
+      password: 'Teacher@123',
+    },
+    {
+      role: 'Student',
+      name: 'Arafat Hossain',
+      email: 'arafat.hossain@edusubmit.com',
+      password: 'Student@123',
+    },
+  ];
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
+
+  protected toggleDemoPicker(): void {
+    this.showDemoPicker.update((value) => !value);
+  }
+
+  protected useDemoUser(user: DemoUser): void {
+    this.form.patchValue({
+      email: user.email,
+      password: user.password,
+    });
+
+    this.showDemoPicker.set(false);
+    this.onSubmit();
+  }
 
   protected onSubmit(): void {
     if (this.form.invalid) {

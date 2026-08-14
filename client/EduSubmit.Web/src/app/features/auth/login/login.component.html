@@ -6,6 +6,17 @@
       <p class="subtitle">Assignment &amp; Submission Management</p>
     </div>
 
+    <div class="demo-access">
+      <button type="button" class="demo-trigger" (click)="toggleDemoPicker()">
+        <span>Use demo account</span>
+      </button>
+    </div>
+
+    <p class="startup-note">
+      Please be patient and wait a little while; this project is hosted on a free platform, so it
+      may take a moment to start on the first run.
+    </p>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="email">Email Address</label>
@@ -60,4 +71,45 @@
 
     <p class="footer-text">&copy; {{ currentYear() }} EduSubmit. All rights reserved.</p>
   </div>
+
+  @if (showDemoPicker()) {
+    <div class="demo-modal-backdrop" (click)="toggleDemoPicker()">
+      <div class="demo-modal" (click)="$event.stopPropagation()">
+        <div class="demo-modal-header">
+          <div>
+            <p class="eyebrow">Showcase access</p>
+            <h2>Choose a demo account</h2>
+          </div>
+          <button
+            type="button"
+            class="close-button"
+            aria-label="Close demo accounts"
+            (click)="toggleDemoPicker()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="demo-grid">
+          @for (user of demoUsers; track user.email) {
+            <button
+              type="button"
+              class="demo-user"
+              [class]="'demo-user--' + user.role.toLowerCase()"
+              (click)="useDemoUser(user)"
+            >
+              <span class="role-badge">{{ user.role }}</span>
+              <h3>{{ user.name }}</h3>
+              <p>{{ user.email }}</p>
+              <div class="credentials">
+                <span>Password</span>
+                <strong>{{ user.password }}</strong>
+              </div>
+              <span class="demo-action">Use this account</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
 </div>
