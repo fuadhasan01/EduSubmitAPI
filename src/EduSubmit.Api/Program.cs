@@ -143,11 +143,10 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAsync(context);
 }
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 
